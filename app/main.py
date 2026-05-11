@@ -6,7 +6,8 @@ from app.models.schemas import AskRequest
 from app.services.data_service import (
     load_jobs,
     search_jobs,
-    format_jobs_context
+    format_jobs_context,
+    search_jobs_by_filters
 )
 from app.services.query_parser import parse_query
 
@@ -105,23 +106,27 @@ def search(skill: str):
     }
 
 @app.post("/search-ai")
+@app.post("/search-ai")
 def search_ai(request: AskRequest):
 
     query = request.query
 
-    matched_jobs = []
+    filters = parse_query(query)
 
-    if "python" in query.lower():
-        matched_jobs = search_jobs("python")
-    elif "react" in query.lower():
-        matched_jobs = search_jobs("react")
+    print("Parsed Filters:")
+    print(filters)
+
+    matched_jobs = search_jobs_by_filters(filters)
 
     context = format_jobs_context(matched_jobs)
+
+    print("Formatted Context:")
+    print(context)
 
     full_prompt = f"""
     {SYSTEM_PROMPT}
 
-    Relevant Job Data:  
+    Relevant Job Data:
     {context}
 
     User Question:
@@ -129,7 +134,6 @@ def search_ai(request: AskRequest):
     """
 
     try:
-        print("Full Prompt Sent to AI:::::::::", full_prompt)
 
         response = requests.post(
             OLLAMA_URL,
@@ -141,10 +145,9 @@ def search_ai(request: AskRequest):
         )
 
         data = response.json()
-
-        print("AI Response Received:::::::::", data["response"], "Matched Jobs:::::", matched_jobs)
-
+        print("AI Response::::::::::::::", data["response"])
         return {
+            "filters": filters,
             "matched_jobs": matched_jobs,
             "ai_response": data["response"]
         }

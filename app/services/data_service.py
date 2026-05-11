@@ -63,3 +63,30 @@ def format_jobs_context(jobs):
 #         """
 
 #     return context
+
+
+def search_jobs_by_filters(filters):
+
+    jobs = load_jobs()
+
+    results = []
+
+    for job in jobs:
+
+        # Skill filtering
+        if filters["skill"]:
+
+            skills = [s.lower() for s in job["skills"]]
+
+            if filters["skill"] not in skills:
+                continue
+
+        # Location filtering
+        if filters["location"]:
+
+            if filters["location"].lower() != job["location"].lower():
+                continue
+
+        results.append(job)
+
+    return results
