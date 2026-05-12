@@ -11,15 +11,31 @@ def load_jobs():
 def search_jobs(skill: str):
 
     jobs = load_jobs()
-
     results = []
+    print()
+
+    # for job in jobs:
+    #     skills = [s.lower() for s in job["skills"]]
+    #     if skill.lower() in skills:
+
+    #         results.append(job)
+
+    #         print("Search_jobs::::::", results)
+
+    # return results
+
 
     for job in jobs:
 
         skills = [s.lower() for s in job["skills"]]
-        if skill.lower() in skills:
 
-            results.append(job)
+    query = skill.lower()
+
+    if any(s in query for s in skills):
+
+        results.append(job)
+
+        print("Search_jobs::::::", results)
 
     return results
 
@@ -90,3 +106,43 @@ def search_jobs_by_filters(filters):
         results.append(job)
 
     return results
+
+
+
+def generate_insights():
+
+    jobs = load_jobs()
+
+    skill_counts = {}
+
+    total_salary = 0
+
+    for job in jobs:
+
+        total_salary += job["salary"]
+
+        for skill in job["skills"]:
+
+            skill = skill.lower()
+
+            if skill not in skill_counts:
+                skill_counts[skill] = 0
+
+            skill_counts[skill] += 1
+
+    average_salary = total_salary / len(jobs)
+
+# Sort skills by count-------
+    top_skills = sorted(
+        skill_counts.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    print("Service - Average Salary:::::", average_salary)
+    print("Service - Top Skills:::::", top_skills[:5])
+
+    return {
+        "average_salary": average_salary,
+        "top_skills": top_skills[:5]
+    }

@@ -7,9 +7,13 @@ from app.services.data_service import (
     load_jobs,
     search_jobs,
     format_jobs_context,
-    search_jobs_by_filters
+    search_jobs_by_filters,
+    generate_insights
 )
 from app.services.query_parser import parse_query
+from app.models.schemas import AskRequest
+from app.ai.intent_detecotor import detect_intent
+from app.services.router_service import route_request
 
 app = FastAPI(
     swagger_ui_parameters={
@@ -166,4 +170,43 @@ def parse(query: str):
 
     filters = parse_query(query)
     print  ("Parsed Filters:::::", filters)
+
     return filters
+@app.get("/insights")
+def insights():
+
+    data = generate_insights()
+
+    return data
+
+
+@app.post("/intent")
+async def classify_intent(query: AskRequest):
+
+    print("Classifying Intent for Query:::::", query.query)
+    result = detect_intent(query.query)
+
+    print("Detected Intent:::::", result)
+
+    return result
+
+
+@app.post("/ai-agent")
+async def ai_agent(request: AskRequest):
+
+    print(":::::::::::::::::::/ai-agent:::::::::::::::::")
+    print("User input ::::", request)
+
+    intent_result = detect_intent(request.query)
+
+    print("::::::::::::::::::::::intent:::::::::::::::::::",intent_result)
+
+    response = route_request(
+        intent_result["intent"],
+        request.query
+    )
+
+    
+
+    return response
+
