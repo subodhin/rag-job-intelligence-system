@@ -1,4 +1,5 @@
 import json
+from app.services.external_jobs import get_jobs
 
 def load_jobs():
 
@@ -10,9 +11,10 @@ def load_jobs():
 
 def search_jobs(skill: str):
 
-    jobs = load_jobs()
+   # jobs = load_jobs()
+    jobs = get_jobs()
     results = []
-    print()
+    print( ":::::::: job search results!:::::::", jobs)
 
     # for job in jobs:
     #     skills = [s.lower() for s in job["skills"]]
@@ -24,6 +26,7 @@ def search_jobs(skill: str):
 
     # return results
 
+    print(":::::Skill :::: (full query)", skill)
 
     for job in jobs:
 
@@ -111,24 +114,33 @@ def search_jobs_by_filters(filters):
 
 def generate_insights():
 
-    jobs = load_jobs()
+   # jobs = load_jobs()
+    jobs = get_jobs()
 
     skill_counts = {}
 
     total_salary = 0
 
+
+    #clean the logic - todo
+
     for job in jobs:
 
-        total_salary += job["salary"]
+     salary = job.get("salary")
 
-        for skill in job["skills"]:
+    if isinstance(salary, int):
 
-            skill = skill.lower()
+        total_salary += salary
 
-            if skill not in skill_counts:
-                skill_counts[skill] = 0
+    for skill in job["skills"]:
 
-            skill_counts[skill] += 1
+        skill = skill.lower()
+
+        if skill not in skill_counts:
+
+            skill_counts[skill] = 0
+
+        skill_counts[skill] += 1
 
     average_salary = total_salary / len(jobs)
 

@@ -10,7 +10,9 @@ def detect_intent(user_query: str):
 
 
 
-# Handle simple greeting queries without triggering expensive LLM workflows    greetings = ["hi", "hello", "hey", "heyy"]
+# Handle simple greeting queries without triggering expensive LLM workflows  
+    greetings = ["hi", "hello", "hey", "heyy"]
+
     if user_query.lower().strip() in greetings:
 
         return {
