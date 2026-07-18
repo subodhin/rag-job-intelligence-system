@@ -116,32 +116,19 @@ def generate_insights():
 
    # jobs = load_jobs()
     jobs = get_jobs()
-
     skill_counts = {}
-
     total_salary = 0
-
-
     #clean the logic - todo
 
     for job in jobs:
-
      salary = job.get("salary")
-
     if isinstance(salary, int):
-
         total_salary += salary
-
     for skill in job["skills"]:
-
         skill = skill.lower()
-
         if skill not in skill_counts:
-
             skill_counts[skill] = 0
-
         skill_counts[skill] += 1
-
     average_salary = total_salary / len(jobs)
 
 # Sort skills by count-------
