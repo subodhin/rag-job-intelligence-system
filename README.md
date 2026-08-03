@@ -1,130 +1,150 @@
-# AI-Powered Job Assistant Platform
+# AI Career Intelligence Platform 🚀
 
-## Overview
+> An AI-powered backend platform that automates job discovery and career intelligence using **Python, FastAPI, Local LLMs, and RAG concepts**.
 
-AI-powered backend platform designed to help users discover jobs intelligently using natural language queries and AI intent detection.
-
-Currently implemented features:
-- intelligent job search
-- market insights workflows
-
-Built mainly to explore:
-- FastAPI
-- Python backend engineering
-- RAG concepts
-- AI routing workflows
-- local LLM integration
-
+**Status:** 🚧 Active Development (Version 1)
 
 ---
 
-# Features
+# 🎯 Problem Statement
 
-- AI-powered job search
-- Intent detection using local LLMs
-- Query parsing and intelligent routing
-- External job API integration
-- Market insights endpoint
-- Async FastAPI backend APIs
-- Swagger/OpenAPI documentation
-- Modular AI routing workflows
+Searching and applying for jobs is repetitive and time-consuming.
 
+This project aims to build a production-style AI platform that helps users:
 
----
-
-# Tech Stack
-
-## Backend
-- Python
-- FastAPI
-
-## AI / LLM
-- Ollama
-- Phi Local LLM
-
-## API / Validation
-- Pydantic
-- Swagger/OpenAPI
-
-## Other
-- Git/GitHub
-- Virtual Environments (venv)
-
-## External APIs
-- Remote job APIs
-
+- Discover relevant jobs
+- Analyze job requirements
+- Match jobs against resumes
+- Identify skill gaps
+- Receive AI-powered career recommendations
+- Track job applications
 
 ---
 
-# Architecture Flow
+# ✅ Current Features (Implemented)
 
+| Feature | Concepts Demonstrated |
+|----------|-----------------------|
+| Intelligent Job Search | Natural Language Processing |
+| Market Insights | AI Workflow Design |
+| Intent Detection | Local LLM Classification |
+| Query Parsing | Pydantic Models |
+| AI Routing | Modular AI Pipelines |
+| FastAPI REST APIs | Backend Engineering |
+| Async API Processing | Async Python |
+| External Job API Integration | API Integration |
+| Structured Validation | Pydantic |
+| Response Sanitization | Production API Practices |
+| Swagger/OpenAPI Documentation | API Development |
+
+---
+
+# 🚧 Planned Features
+
+| Feature | AI / Engineering Concepts |
+|----------|---------------------------|
+| Multi-source Job Aggregation | Data Ingestion Pipelines |
+| Job Knowledge Base | PostgreSQL |
+| Resume Parser | Information Extraction |
+| Resume ↔ Job Matching | Explainable AI |
+| Skill Gap Analysis | AI Recommendations |
+| Personalized Job Ranking | Recommendation Engine |
+| Semantic Search | Embeddings |
+| Vector Database | Qdrant / pgvector |
+| Hybrid RAG | Retrieval Engineering |
+| Multi-Agent Workflows | Agentic AI |
+| Career Analytics Dashboard | Data Analytics |
+| Application Tracker | Workflow Automation |
+| Excel/CSV Export | Data Engineering |
+| Frontend Dashboard | React / Next.js |
+| Docker Deployment | Containerization |
+
+---
+
+# 🏗 Current Architecture
+
+```text
 User Query
-↓
-FastAPI Endpoint
-↓
-Intent Detection (LLM)
-↓
+     │
+     ▼
+FastAPI API
+     │
+     ▼
+Intent Detection (Phi)
+     │
+     ▼
 AI Routing Pipeline
-↓
-Relevant Workflow / External API
-↓
-AI-Augmented Response
-
-
----
-
-# Main Concepts Implemented
-
-- FastAPI backend APIs
-- Local LLM integration
-- Intent detection
-- Query parsing
-- AI routing pipelines
-- Async API handling
-- RAG-style retrieval concepts
-- Structured request validation
-- Response sanitization
-
+     │
+ ┌───┴──────────┐
+ ▼              ▼
+Job Search   Market Insights
+     │
+     ▼
+External Job API
+     │
+     ▼
+JSON Response
+```
 
 ---
 
-# Example User Queries
+# 🛠 Tech Stack
 
-- "Find high-paying remote Python jobs"
-- "What skills are trending in AI jobs?"
-
-
----
-
-# Key Learning Outcomes
-
-- Learned Python backend development
-- Built production-style FastAPI APIs
-- Worked with local LLMs using Ollama
-- Implemented intent-based AI workflows
-- Explored RAG architecture concepts
-- Improved understanding of async APIs
-- Integrated external APIs into AI systems
-
+| Category | Technologies |
+|----------|--------------|
+| Backend | Python, FastAPI |
+| AI / LLM | Ollama, Phi |
+| AI Concepts | Prompt Engineering, Intent Detection, RAG |
+| Validation | Pydantic |
+| API Documentation | Swagger / OpenAPI |
+| Tools | Git, GitHub, Virtual Environment (venv) |
 
 ---
 
-# Future Improvements
+# 💡 AI Engineering Skills Demonstrated
 
-- Salary insights workflows
-- Career advice workflows
-- Resume review workflows
-- Vector database support
-- Better semantic search
-- JWT authentication
-- PostgreSQL integration
-- Docker deployment
-- Frontend dashboard
-- Multi-agent workflows
-
+| Backend | AI | Software Engineering |
+|----------|----|----------------------|
+| FastAPI | Local LLM Integration | REST APIs |
+| Python | Prompt Engineering | Async Programming |
+| API Design | Intent Detection | Modular Architecture |
+| API Integration | AI Routing | Request Validation |
+| JSON Processing | RAG Fundamentals | Response Sanitization |
 
 ---
 
-# Author
+# 📍 Roadmap
 
-Subodhi Nanayakkara
+| Version | Focus |
+|----------|-------|
+| ✅ V1 | Intelligent Job Search & Market Insights |
+| 🚧 V2 | Resume Analysis & Job Matching |
+| 🚧 V3 | Semantic Search, Embeddings & Vector Database |
+| 🚧 V4 | AI Agents & Recommendation Engine |
+| 🚧 V5 | Career Analytics Platform & Production Deployment |
+
+---
+
+# 🎯 Long-Term Vision
+
+Build a **production-ready AI Career Intelligence Platform** that combines:
+
+- LLMs
+- Retrieval-Augmented Generation (RAG)
+- Semantic Search
+- Embeddings
+- Vector Databases
+- AI Agents
+- Recommendation Systems
+- Explainable AI
+- Workflow Automation
+
+to automate the end-to-end job search and career development workflow.
+
+---
+
+## 👨‍💻 Author
+
+**Subodhi Nanayakkara**
+
+Software Engineer passionate about **AI Engineering, Backend Systems, LLM Applications, RAG, Agentic AI, and Intelligent Software Architecture**.
