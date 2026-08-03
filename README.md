@@ -1,45 +1,91 @@
-# AI Career Intelligence Platform 🚀
+# 🔷 AI Career Intelligence Platform
 
-> An AI-powered backend platform that automates job discovery and career intelligence using **Python, FastAPI, Local LLMs, and RAG concepts**.
+> An AI-powered backend platform that simplifies job discovery using **Python, FastAPI, Local LLMs, and Retrieval-Augmented Generation (RAG) concepts**.
 
 **Status:** 🚧 Active Development (Version 1)
 
 ---
 
-# 🎯 Problem Statement
+# 📋 Overview
 
-Searching and applying for jobs is repetitive and time-consuming.
+This project started as an AI-powered job search assistant to explore modern AI backend development using FastAPI and Local LLMs.
 
-This project aims to build a production-style AI platform that helps users:
+It is now evolving into a **Career Intelligence Platform** that aims to automate repetitive job search workflows including job discovery, resume analysis, intelligent job matching, career insights, and AI-powered recommendations.
 
-- Discover relevant jobs
-- Analyze job requirements
-- Match jobs against resumes
-- Identify skill gaps
-- Receive AI-powered career recommendations
-- Track job applications
+The long-term goal is to build a production-style AI platform using modern AI engineering practices.
 
 ---
 
-# ✅ Current Features (Implemented)
+# 📦 Current Features (Implemented)
 
 | Feature | Concepts Demonstrated |
 |----------|-----------------------|
-| Intelligent Job Search | Natural Language Processing |
+| Intelligent Job Search | Natural Language Query Processing |
 | Market Insights | AI Workflow Design |
 | Intent Detection | Local LLM Classification |
 | Query Parsing | Pydantic Models |
 | AI Routing | Modular AI Pipelines |
 | FastAPI REST APIs | Backend Engineering |
 | Async API Processing | Async Python |
-| External Job API Integration | API Integration |
-| Structured Validation | Pydantic |
+| External Job API Integration | REST API Integration |
+| Structured Request Validation | Pydantic |
 | Response Sanitization | Production API Practices |
-| Swagger/OpenAPI Documentation | API Development |
+| Swagger / OpenAPI Documentation | API Development |
 
 ---
 
-# 🚧 Planned Features
+# 🏛️ Current Architecture
+
+```text
+                     User Query
+                          │
+                          ▼
+                    FastAPI API
+                          │
+                          ▼
+               Intent Detection (Phi)
+                          │
+                          ▼
+                 AI Routing Pipeline
+                          │
+              ┌───────────┴───────────┐
+              ▼                       ▼
+        Job Search            Market Insights
+              │
+              ▼
+      External Job API
+              │
+              ▼
+        AI-Augmented Response
+```
+
+---
+
+# 🛠️ Tech Stack
+
+| Category | Technologies |
+|----------|--------------|
+| Backend | Python, FastAPI |
+| AI / LLM | Ollama, Phi |
+| AI Concepts | Prompt Engineering, Intent Detection, RAG Concepts |
+| API & Validation | Pydantic, Swagger / OpenAPI |
+| Tools | Git, GitHub, Python Virtual Environment (venv) |
+
+---
+
+# 🧬 AI Engineering Skills Demonstrated
+
+| Backend Engineering | AI Engineering | Software Engineering |
+|---------------------|---------------|----------------------|
+| Python | Local LLM Integration | REST API Design |
+| FastAPI | Prompt Engineering | Async Programming |
+| API Development | Intent Detection | Modular Architecture |
+| API Integration | AI Routing Pipelines | Request Validation |
+| JSON Processing | RAG Fundamentals | Response Sanitization |
+
+---
+
+# 🔮 Planned Features
 
 | Feature | AI / Engineering Concepts |
 |----------|---------------------------|
@@ -48,68 +94,16 @@ This project aims to build a production-style AI platform that helps users:
 | Resume Parser | Information Extraction |
 | Resume ↔ Job Matching | Explainable AI |
 | Skill Gap Analysis | AI Recommendations |
-| Personalized Job Ranking | Recommendation Engine |
+| Personalized Job Ranking | Recommendation Systems |
 | Semantic Search | Embeddings |
 | Vector Database | Qdrant / pgvector |
-| Hybrid RAG | Retrieval Engineering |
+| Hybrid Retrieval | Advanced RAG |
 | Multi-Agent Workflows | Agentic AI |
 | Career Analytics Dashboard | Data Analytics |
 | Application Tracker | Workflow Automation |
-| Excel/CSV Export | Data Engineering |
+| Excel / CSV Export | Data Engineering |
 | Frontend Dashboard | React / Next.js |
 | Docker Deployment | Containerization |
-
----
-
-# 🏗 Current Architecture
-
-```text
-User Query
-     │
-     ▼
-FastAPI API
-     │
-     ▼
-Intent Detection (Phi)
-     │
-     ▼
-AI Routing Pipeline
-     │
- ┌───┴──────────┐
- ▼              ▼
-Job Search   Market Insights
-     │
-     ▼
-External Job API
-     │
-     ▼
-JSON Response
-```
-
----
-
-# 🛠 Tech Stack
-
-| Category | Technologies |
-|----------|--------------|
-| Backend | Python, FastAPI |
-| AI / LLM | Ollama, Phi |
-| AI Concepts | Prompt Engineering, Intent Detection, RAG |
-| Validation | Pydantic |
-| API Documentation | Swagger / OpenAPI |
-| Tools | Git, GitHub, Virtual Environment (venv) |
-
----
-
-# 💡 AI Engineering Skills Demonstrated
-
-| Backend | AI | Software Engineering |
-|----------|----|----------------------|
-| FastAPI | Local LLM Integration | REST APIs |
-| Python | Prompt Engineering | Async Programming |
-| API Design | Intent Detection | Modular Architecture |
-| API Integration | AI Routing | Request Validation |
-| JSON Processing | RAG Fundamentals | Response Sanitization |
 
 ---
 
@@ -117,34 +111,44 @@ JSON Response
 
 | Version | Focus |
 |----------|-------|
-| ✅ V1 | Intelligent Job Search & Market Insights |
-| 🚧 V2 | Resume Analysis & Job Matching |
-| 🚧 V3 | Semantic Search, Embeddings & Vector Database |
-| 🚧 V4 | AI Agents & Recommendation Engine |
-| 🚧 V5 | Career Analytics Platform & Production Deployment |
+| ✅ Version 1 | Intelligent Job Search & Market Insights |
+| 🚧 Version 2 | Multi-source Job Collection & PostgreSQL Integration |
+| 🚧 Version 3 | Resume Analysis, Job Matching & Skill Gap Analysis |
+| 🚧 Version 4 | Semantic Search, Embeddings & Vector Database |
+| 🚧 Version 5 | AI Recommendation Engine & Multi-Agent Workflows |
+| 🚧 Version 6 | Career Analytics Dashboard, Docker & Production Deployment |
 
 ---
 
-# 🎯 Long-Term Vision
+# 🌐 Long-Term Vision
 
-Build a **production-ready AI Career Intelligence Platform** that combines:
+Build a production-ready **AI Career Intelligence Platform** that helps users:
 
-- LLMs
+- Discover jobs from multiple sources
+- Build a personal job knowledge base
+- Analyze resumes and job descriptions
+- Match resumes with suitable opportunities
+- Identify skill gaps
+- Receive personalized AI-powered career recommendations
+- Track job applications
+- Generate career insights from job market data
+
+using modern AI engineering concepts including:
+
+- Large Language Models (LLMs)
 - Retrieval-Augmented Generation (RAG)
 - Semantic Search
 - Embeddings
 - Vector Databases
-- AI Agents
+- Agentic AI
 - Recommendation Systems
 - Explainable AI
 - Workflow Automation
 
-to automate the end-to-end job search and career development workflow.
-
 ---
 
-## 👨‍💻 Author
+# ✍️ Author
 
 **Subodhi Nanayakkara**
 
-Software Engineer passionate about **AI Engineering, Backend Systems, LLM Applications, RAG, Agentic AI, and Intelligent Software Architecture**.
+Software Engineer with 6+ years of experience, currently expanding into **AI Engineering** by building production-style AI applications focused on LLMs, Retrieval-Augmented Generation (RAG), intelligent backend systems, and AI workflow automation.
