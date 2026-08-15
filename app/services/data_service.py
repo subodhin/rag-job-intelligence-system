@@ -144,4 +144,4 @@ def generate_insights():
     return {
         "average_salary": average_salary,
         "top_skills": top_skills[:5]
-    }
+    } 

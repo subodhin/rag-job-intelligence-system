@@ -51,7 +51,6 @@ def ask(request: AskRequest):
             status_code=400,
             detail="Only job-related queries are allowed."
         )
-#    // print("system prompt" + SYSTEM_PROMPT)
 
     full_prompt = f"""
     {SYSTEM_PROMPT}
@@ -93,6 +92,7 @@ def ask(request: AskRequest):
 
 @app.get("/jobs")
 def get_jobs():
+    #TEST API for raw data jobs  
 
     jobs = load_jobs()
 
