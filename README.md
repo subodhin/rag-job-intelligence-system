@@ -37,26 +37,35 @@ The long-term goal is to build a production-style AI platform using modern AI en
 # 🏛️ Current Architecture
 
 ```text
-                     User Query
-                          │
-                          ▼
-                    FastAPI API
-                          │
-                          ▼
-               Intent Detection (Phi)
-                          │
-                          ▼
-                 AI Routing Pipeline
-                          │
-              ┌───────────┴───────────┐
-              ▼                       ▼
-        Job Search            Market Insights
-              │
-              ▼
-      External Job API
-              │
-              ▼
-        AI-Augmented Response
+                          User Query
+                              │
+                              ▼
+                       FastAPI REST API
+                              │
+                    ┌─────────┴─────────┐
+                    │                   │
+                    ▼                   ▼
+              Direct APIs          /ai-agent
+                    │                   │
+                    │                   ▼
+                    │          Intent Detection
+                    │               (Phi)
+                    │                   │
+                    │                   ▼
+                    │          AI Workflow Router
+                    │                   │
+                    │          ┌────────┴────────┐
+                    │          ▼                 ▼
+                    │     Job Search       Market Insights
+                    │       Workflow          Workflow
+                    │          │                 │
+                    │          ▼                 ▼
+                    │   External Job API    AI Processing
+                    │          │                 │
+                    └──────────┴─────────────────┘
+                              │
+                              ▼
+                        Final Response
 ```
 
 ---
