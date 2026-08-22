@@ -99,7 +99,7 @@ def get_jobs():
     return jobs
 
 
-
+#straight map form external API 
 @app.get("/search")
 def search(skill: str):
 
@@ -109,7 +109,7 @@ def search(skill: str):
         "results": results
     }
 
-@app.post("/search-ai")
+#external ai job listing based on that AI responses with resources used
 @app.post("/search-ai")
 def search_ai(request: AskRequest):
 
@@ -118,13 +118,13 @@ def search_ai(request: AskRequest):
     filters = parse_query(query)
 
     print("Parsed Filters:")
-    print(filters)
+    print("filters:::::",filters)
 
     matched_jobs = search_jobs_by_filters(filters)
 
     context = format_jobs_context(matched_jobs)
 
-    print("Formatted Context:")
+    print("Formatted Context::::::")
     print(context)
 
     full_prompt = f"""
@@ -136,7 +136,7 @@ def search_ai(request: AskRequest):
     User Question:
     {query}
     """
-
+    print("Full Prompt Sent to AI::::::",full_prompt)
     try:
 
         response = requests.post(
@@ -172,6 +172,7 @@ def parse(query: str):
     print  ("Parsed Filters:::::", filters)
 
     return filters
+#current market(average salary insights)
 @app.get("/insights")
 def insights():
 
@@ -191,6 +192,7 @@ async def classify_intent(query: AskRequest):
     return result
 
 
+# choose agent flows based on intent
 @app.post("/ai-agent")
 async def ai_agent(request: AskRequest):
 

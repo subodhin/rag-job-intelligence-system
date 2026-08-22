@@ -10,35 +10,21 @@ def load_jobs():
     return jobs
 
 def search_jobs(skill: str):
-
-   # jobs = load_jobs()
     jobs = get_jobs()
     results = []
-    print( ":::::::: job search results!:::::::", jobs)
 
-    # for job in jobs:
-    #     skills = [s.lower() for s in job["skills"]]
-    #     if skill.lower() in skills:
-
-    #         results.append(job)
-
-    #         print("Search_jobs::::::", results)
-
-    # return results
-
-    print(":::::Skill :::: (full query)", skill)
-
-    for job in jobs:
-
-        skills = [s.lower() for s in job["skills"]]
+    print(":::::::: job search results! :::::::", jobs)
+    print("::::: Skill :::: (full query)", skill)
 
     query = skill.lower()
 
-    if any(s in query for s in skills):
+    for job in jobs:
+        skills = [s.lower() for s in job["skills"]]
 
-        results.append(job)
+        if any(s in query for s in skills):
+            results.append(job)
 
-        print("Search_jobs::::::", results)
+    print("Search_jobs ::::::", results)
 
     return results
 
@@ -86,7 +72,11 @@ def format_jobs_context(jobs):
 
 def search_jobs_by_filters(filters):
 
-    jobs = load_jobs()
+#local data set test!
+   # jobs = load_jobs()
+
+   #external API data set test!
+    jobs = get_jobs()
 
     results = []
 
