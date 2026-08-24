@@ -1,5 +1,8 @@
 import json
+from urllib import response
 from app.services.external_jobs import get_jobs
+import ollama
+from app.embedding_functions.create_job_embedding import embed_jobs
 
 def load_jobs():
 
@@ -11,10 +14,14 @@ def load_jobs():
 
 def search_jobs(skill: str):
     jobs = get_jobs()
+    print("embedding testing::::",jobs[0])
     results = []
 
-    print(":::::::: job search results! :::::::", jobs)
-    print("::::: Skill :::: (full query)", skill)
+    embedded_jobs = embed_jobs(jobs)
+
+    print("Jobs:>>>>>", len(jobs))
+    print("Embedded:>>>>>", len(embedded_jobs))
+    print("Vector length:>>>>>>>>", len(embedded_jobs[0]["embedding"]))
 
     query = skill.lower()
 
@@ -24,7 +31,7 @@ def search_jobs(skill: str):
         if any(s in query for s in skills):
             results.append(job)
 
-    print("Search_jobs ::::::", results)
+    print("actaul result ::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results)
 
     return results
 
