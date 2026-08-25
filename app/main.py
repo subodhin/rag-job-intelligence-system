@@ -3,6 +3,7 @@ import requests
 
 from app.prompts import SYSTEM_PROMPT
 from app.models.schemas import AskRequest
+from app.services import semantic_search_service
 from app.services.data_service import (
     load_jobs,
     search_jobs,
@@ -211,4 +212,14 @@ async def ai_agent(request: AskRequest):
     
 
     return response
+
+@app.post("/semantic-search")
+def semantic_search(request: AskRequest):
+    print("Semantic Search Query:::::", request.query)
+    #results = semantic_search_service.semantic_search(query=request.query,top_k=request.top_k)
+    results = semantic_search_service.semantic_search(
+    query=request.query,
+    top_k=3
+)
+    return {"results": results}
 

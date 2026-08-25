@@ -29,3 +29,6 @@ def create_index(embedded_jobs):
 def save_index(index):
     faiss.write_index(index, INDEX_PATH)
     print(f"Index saved to: {INDEX_PATH}")
+def search_index(index, query_vector, top_k=3):
+    distances, indices = index.search(query_vector, top_k)
+    return distances, indices
