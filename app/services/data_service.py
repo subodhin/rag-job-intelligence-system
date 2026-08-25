@@ -1,8 +1,12 @@
 import json
 from urllib import response
+
+import faiss
 from app.services.external_jobs import get_jobs
 import ollama
 from app.embedding_functions.create_job_embedding import embed_jobs
+from app.services.vector_service import create_index, save_index
+import os
 
 def load_jobs():
 
@@ -12,16 +16,48 @@ def load_jobs():
 
     return jobs
 
+# def search_jobs(skill: str):
+#     jobs = get_jobs()
+#     print("embedding testing::::",jobs[0])
+#     results = []
+
+#     embedded_jobs = embed_jobs(jobs)
+
+#     #index = create_index(embedded_jobs)
+
+#     print("Number of vectors:", index.ntotal)
+#     print("Vector dimension:", index.d)
+
+#     os.makedirs("data", exist_ok=True)
+#     index = create_index(embedded_jobs)
+
+
+
+#     save_index(index)
+#    # faiss.write_index(index, INDEX_PATH)
+#    # print(f"Index saved to: {INDEX_PATH}")
+
+#     print("Jobs:>>>>>", len(jobs))
+#     print("Embedded:>>>>>", len(embedded_jobs))
+#     print("Vector length:>>>>>>>>", len(embedded_jobs[0]["embedding"]))
+
+#     query = skill.lower()
+
+#     for job in jobs:
+#         skills = [s.lower() for s in job["skills"]]
+
+#         if any(s in query for s in skills):
+#             results.append(job)
+
+#     print("actaul result ::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results)
+
+#     return results
+
+
+
 def search_jobs(skill: str):
     jobs = get_jobs()
-    print("embedding testing::::",jobs[0])
     results = []
-
-    embedded_jobs = embed_jobs(jobs)
-
-    print("Jobs:>>>>>", len(jobs))
-    print("Embedded:>>>>>", len(embedded_jobs))
-    print("Vector length:>>>>>>>>", len(embedded_jobs[0]["embedding"]))
 
     query = skill.lower()
 
@@ -30,12 +66,9 @@ def search_jobs(skill: str):
 
         if any(s in query for s in skills):
             results.append(job)
-
     print("actaul result ::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results)
 
     return results
-
-
 
 def format_jobs_context(jobs):
 
