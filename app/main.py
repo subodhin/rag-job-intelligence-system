@@ -1,6 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from opentelemetry import context
 import requests
+import time
 
+# from app import rag_prompt
 from app.prompts import SYSTEM_PROMPT
 from app.models.schemas import AskRequest
 from app.services import semantic_search_service
@@ -15,6 +18,9 @@ from app.services.query_parser import parse_query
 from app.models.schemas import AskRequest
 from app.ai.intent_detecotor import detect_intent
 from app.services.router_service import route_request
+
+from app.services.semantic_search_service import semantic_search
+from app.services.rag_service import check_required_skills
 
 app = FastAPI(
     swagger_ui_parameters={
@@ -119,7 +125,7 @@ def search_ai(request: AskRequest):
     filters = parse_query(query)
 
     print("Parsed Filters:")
-    print("filters:::::",filters)
+    print("filters:::::::::::::",filters)
 
     matched_jobs = search_jobs_by_filters(filters)
 
@@ -223,3 +229,171 @@ def semantic_search(request: AskRequest):
 )
     return {"results": results}
 
+
+#
+@app.post("/rag-v2")
+def rag_v2(request: AskRequest):
+
+    query = request.query
+
+    # --------------------------------------------------
+    # 1. Parse user query
+    # --------------------------------------------------
+    filters = parse_query(query)
+
+    print("Parsed Filters:")
+    print(filters)
+
+    # --------------------------------------------------
+    # 2. Semantic retrieval using FAISS
+    # --------------------------------------------------
+    retrieved_results = semantic_search_service.semantic_search(
+        query=query,
+        top_k=3
+    )
+
+    print("Retrieved Results:")
+    print(retrieved_results)
+
+    # --------------------------------------------------
+    # 3. Extract jobs from FAISS results
+    # --------------------------------------------------
+    retrieved_jobs = [
+        result["job"]
+        for result in retrieved_results
+    ]
+
+    # --------------------------------------------------
+    # 4. Get required skills dynamically
+    # --------------------------------------------------
+    required_skills = filters.get("skills") or []
+
+    # Support your existing parser which currently
+    # returns a single "skill" field
+    if not required_skills and filters.get("skill"):
+        required_skills = [filters["skill"]]
+
+    print("Required Skills:")
+    print(required_skills)
+
+    # --------------------------------------------------
+    # 5. Validate retrieved jobs using Python
+    # --------------------------------------------------
+    validated_jobs = check_required_skills(
+        retrieved_jobs,
+        required_skills
+    )
+
+    print("Validated Jobs:")
+    print(validated_jobs)
+
+    # --------------------------------------------------
+    # 6. Add validation information to context
+    # --------------------------------------------------
+    context_jobs = []
+
+    for item in validated_jobs:
+
+        job = item["job"]
+
+        context_jobs.append({
+            **job,
+            "matched_skills": item["matched_skills"],
+            "missing_skills": item["missing_skills"]
+        })
+
+    # --------------------------------------------------
+    # 7. Format context for Phi
+    # --------------------------------------------------
+    context = format_jobs_context(context_jobs)
+
+    print("RAG Context:")
+    print(context)
+
+    # --------------------------------------------------
+    # 8. Build grounded prompt
+    # --------------------------------------------------
+    rag_prompt = f"""
+You are a job search assistant.
+
+Use ONLY the information inside JOB DATA.
+
+JOB DATA:
+{context}
+
+QUESTION:
+{query}
+
+Rules:
+- Do not use outside knowledge.
+- Do not invent information.
+- Do not rename job titles.
+- Do not change salary or location.
+- Do not claim a skill unless it appears in JOB DATA.
+- If a requested skill is missing, say that it is not specified.
+- If no job clearly matches, say so.
+
+Answer the question using only the JOB DATA.
+"""
+
+    print("Prompt Sent to Phi:")
+    print(rag_prompt)
+    # --------------------------------------------------
+    # 9. Send prompt to Phi + measure LLM latency
+    # --------------------------------------------------
+    try:
+
+        start_time = time.perf_counter()
+
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": "phi",
+                "prompt": rag_prompt,
+                "stream": False
+            }
+        )
+
+        llm_response_time = time.perf_counter() - start_time
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        ai_response = data["response"]
+
+        print("Phi Response:")
+        print(ai_response)
+
+        print(
+            f"Phi response time: "
+            f"{llm_response_time:.2f} seconds"
+        )
+
+        # --------------------------------------------------
+        # 10. Return final RAG response
+        # --------------------------------------------------
+        return {
+            "query": query,
+            "filters": filters,
+            "retrieved_jobs": retrieved_results,
+            "validated_jobs": validated_jobs,
+            "ai_response": ai_response,
+            "llm_response_time_seconds": round(
+                llm_response_time, 2
+            )
+        }
+
+    except requests.exceptions.RequestException as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM request failed: {str(e)}"
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
