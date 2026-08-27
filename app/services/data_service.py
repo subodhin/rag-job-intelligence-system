@@ -77,16 +77,22 @@ def format_jobs_context(jobs):
 
     context_lines = []
 
-    for job in jobs[:3]:
+    for i, job in enumerate(jobs[:3], start=1):
 
         line = (
-            f"{job['title']} | "
-            f"Skills: {', '.join(job['skills'])} | "
-            f"Salary: {job['salary']}"
+            f"JOB {i}\n"
+            f"Title: {job['title']}\n"
+            f"Skills: {', '.join(job['skills'])}\n"
+            f"Salary: {job['salary']}\n"
+            f"Location: {job['location']}\n"
         )
 
         context_lines.append(line)
-        print("Service - Formatted job context line:::::", line)
+
+        print(
+            "Service - Formatted job context:\n",
+            line
+        )
 
     return "\n".join(context_lines)
 
