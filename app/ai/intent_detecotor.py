@@ -66,13 +66,13 @@ def detect_intent(user_query: str):
 
         intent_data = json.loads(cleaned_response)
 
-        print("Parsed Intent Data::::", intent_data)
+        print("Parsed Intent Data::::::::::::::::::::::::::::::::::::::::::::::::::::", intent_data)
 
         return intent_data
 
     except Exception as e:
 
-        print("JSON Decode Error::::", e)
+        print("JSON Decode Error:::::::::", e)
 
         return {
             "intent": "unknown"
