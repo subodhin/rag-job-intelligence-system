@@ -20,6 +20,14 @@ def embed_jobs(jobs):
         )
 
         embedding = response["embeddings"][0]
+        print(" ")
+        print(
+            "Embedding created for job:",
+            job["title"],
+            "Embedding :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",
+            embedding
+        )
+
 
         embedded_jobs.append({
             "job": job,
