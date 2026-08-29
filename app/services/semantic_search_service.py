@@ -6,18 +6,33 @@ import ollama
 
 from app.services.vector_service import INDEX_PATH, search_index
 
+# Qdrant
+from app.services.qdrant_service import client, COLLECTION_NAME
+
 
 METADATA_PATH = "data/job_metadata.json"
 
 
 def semantic_search(query: str, top_k: int = 3):
-    print("Semantic Search Query:::::", query, "Top K:::::", top_k, "INDEX_PATH:::::", INDEX_PATH, "METADATA_PATH:::::", METADATA_PATH)
+
+    print(
+        "Semantic Search Query:::::",
+        query,
+        "Top K:::::",
+        top_k
+    )
+
+    # ==================================================
+    # OLD FAISS IMPLEMENTATION
+    # KEEP FOR COMPARISON
+    # ==================================================
+
     # Load FAISS index
-    index = faiss.read_index(INDEX_PATH)
+    # index = faiss.read_index(INDEX_PATH)
 
     # Load job metadata
-    with open(METADATA_PATH, "r") as f:
-        job_metadata = json.load(f)
+    # with open(METADATA_PATH, "r") as f:
+    #     job_metadata = json.load(f)
 
     # Convert query to embedding
     response = ollama.embed(
@@ -30,23 +45,59 @@ def semantic_search(query: str, top_k: int = 3):
         dtype="float32"
     )
 
-    # Normalize for cosine similarity
-    faiss.normalize_L2(query_vector)
+    # ==================================================
+    # OLD FAISS NORMALIZATION
+    # ==================================================
 
-    # Search vector index
-    distances, indices = search_index(
-        index,
-        query_vector,
-        top_k=top_k
+    # faiss.normalize_L2(query_vector)
+
+    # ==================================================
+    # OLD FAISS SEARCH
+    # ==================================================
+
+    # distances, indices = search_index(
+    #     index,
+    #     query_vector,
+    #     top_k=top_k
+    # )
+
+    # ==================================================
+    # OLD FAISS RESULT MAPPING
+    # ==================================================
+
+    # results = []
+
+    # for rank, vector_id in enumerate(indices[0]):
+    #     results.append({
+    #         "job": job_metadata[vector_id],
+    #         "similarity": float(distances[0][rank])
+    #     })
+
+    # return results
+
+
+    # ==================================================
+    # NEW QDRANT SEARCH
+    # ==================================================
+
+    results = client.query_points(
+        collection_name=COLLECTION_NAME,
+        query=query_vector[0].tolist(),
+        limit=top_k,
+        with_payload=True
     )
 
-    # Map vector IDs → actual jobs
-    results = []
+    # ==================================================
+    # FORMAT QDRANT RESULTS
+    # ==================================================
 
-    for rank, vector_id in enumerate(indices[0]):
-        results.append({
-            "job": job_metadata[vector_id],
-            "similarity": float(distances[0][rank])
+    qdrant_results = []
+
+    for point in results.points:
+
+        qdrant_results.append({
+            "job": point.payload,
+            "similarity": float(point.score)
         })
 
-    return results
+    return qdrant_results
