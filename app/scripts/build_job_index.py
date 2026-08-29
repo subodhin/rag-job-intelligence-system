@@ -19,7 +19,6 @@ os.makedirs("data", exist_ok=True)
 jobs = get_jobs() 
 
 
-
 # Generate embeddings
 embedded_jobs = embed_jobs(jobs)
 
