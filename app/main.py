@@ -21,12 +21,24 @@ from app.services.router_service import route_request
 
 from app.services.semantic_search_service import semantic_search
 from app.services.rag_service import check_required_skills
+from app.tools.tool_router import select_tool, execute_tool
+
+from app.context.router import router as context_router
+
+from app.models.schemas import ContextAgentRequest
+from app.models.schemas import AskRequest
+from app.models.schemas import ContextAgentRequest
+from app.context.context_service import get_user_context, print_user_context,save_message
+from app.ai.groq_intent_detector import detect_intent_groq
+
 
 app = FastAPI(
     swagger_ui_parameters={
         "syntaxHighlight.theme": "obsidian"
     }
 )
+app.include_router(context_router)
+
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
@@ -214,6 +226,11 @@ async def ai_agent(request: AskRequest):
         intent_result["intent"],
         request.query
     )
+    # response = route_request(
+#     intent_result["intent"],
+#     request.query,
+#     user_context
+# )
 
     
 
@@ -233,6 +250,7 @@ def semantic_search(request: AskRequest):
 #
 @app.post("/rag-v2")
 def rag_v2(request: AskRequest):
+    
 
     query = request.query
 
@@ -397,3 +415,126 @@ Answer the question using only the JOB DATA.
             status_code=500,
             detail=str(e)
         )
+
+@app.post("/agent")
+def agent(request: AskRequest):
+
+    print("Agent Query:::::", request.query)
+
+    query = request.query
+
+    # 1. Detect intent
+    intent = detect_intent(query)
+
+    print("User Query:", query)
+    print("Detected Intent::::::::::::::::::::::::::::::::::::::::::::::::::::", intent)
+
+    # 2. Select tool
+    tool_name = select_tool(
+        intent,
+        query
+    )
+
+    print("Selected Tool::::::::::::::::::::::::::::::::::::::::::", tool_name)
+
+    # 3. Execute tool
+    if tool_name:
+
+        tool_result = execute_tool(
+            tool_name,
+            query
+        )
+
+    else:
+
+        tool_result = {
+            "message": "No suitable tool found."
+        }
+
+    print("Tool Result::::::::::::::::::::::::::::::::::::::::::::::::::::", tool_result)
+
+    # 4. Return orchestration result
+    return {
+        "query": query,
+        "intent": intent,
+        "tool": tool_name,
+        "tool_result": tool_result
+    }
+
+
+@app.post("/ai-agent-context")
+async def ai_agent_context(request: ContextAgentRequest):
+
+    print(":::::::::::::::::::/ai-agent-context:::::::::::::::::")
+    print("User ID:", request.user_id)
+    print("User Query:", request.query)
+
+    # ---------------------------------------
+    # Load existing persistent user context
+    # ---------------------------------------
+
+    user_context = get_user_context(request.user_id)
+
+    if user_context is None:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    print("User Context:::::::::::::::::", user_context)
+
+    # ---------------------------------------
+    # Detect intent
+    # ---------------------------------------
+
+    intent_result = detect_intent_groq(request.query)
+
+    print(
+        "Detected Intent:::::::::::::::::",
+        intent_result
+    )
+
+    # ---------------------------------------
+    # Route request to agent
+    # ---------------------------------------
+
+    response = route_request(
+        intent_result["intent"],
+        request.query,
+        user_context
+    )
+
+    # ---------------------------------------
+    # Save current user message
+    # ---------------------------------------
+
+    save_message(
+        user_id=request.user_id,
+        role="user",
+        content=request.query
+    )
+
+    # ---------------------------------------
+    # Save assistant response
+    # ---------------------------------------
+
+    save_message(
+        user_id=request.user_id,
+        role="assistant",
+        content=str(response)
+    )
+
+    # ---------------------------------------
+    # Return response
+    # ---------------------------------------
+
+    print_user_context(
+        get_user_context(request.user_id)
+    )
+
+    return {
+        "user_id": request.user_id,
+        "context": user_context,
+        "intent": intent_result,
+        "response": response
+    }

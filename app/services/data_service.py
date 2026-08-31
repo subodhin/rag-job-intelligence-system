@@ -116,37 +116,141 @@ def format_jobs_context(jobs):
 #     return context
 
 
+# def search_jobs_by_filters(filters):
+
+# #local data set test!
+#    # jobs = load_jobs()
+
+#    #external API data set test!
+#     jobs = get_jobs()
+
+#     results = []
+
+#     for job in jobs:
+
+#         # Skill filtering
+#         if filters["skill"]:
+
+#             skills = [s.lower() for s in job["skills"]]
+
+#             if filters["skill"] not in skills:
+#                 continue
+
+#         # Location filtering
+#         if filters["location"]:
+
+#             if filters["location"].lower() != job["location"].lower():
+#                 continue
+
+#         results.append(job)
+
+#     return results
+
 def search_jobs_by_filters(filters):
 
-#local data set test!
-   # jobs = load_jobs()
-
-   #external API data set test!
     jobs = get_jobs()
+    scored_results = []
 
-    results = []
+    title = filters.get("title")
+    skills = filters.get("skills", [])
+    location = filters.get("location")
+
+    # Normalize filters
+    title = title.lower().strip() if title else None
+
+    skills = [
+        skill.lower().strip()
+        for skill in skills
+        if skill
+    ]
+
+    location = location.lower().strip() if location else None
 
     for job in jobs:
 
-        # Skill filtering
-        if filters["skill"]:
+        job_title = job.get("title", "").lower()
 
-            skills = [s.lower() for s in job["skills"]]
+        job_skills = [
+            skill.lower().strip()
+            for skill in job.get("skills", [])
+        ]
 
-            if filters["skill"] not in skills:
-                continue
+        job_location = job.get("location", "").lower()
 
-        # Location filtering
-        if filters["location"]:
+        score = 0
 
-            if filters["location"].lower() != job["location"].lower():
-                continue
+        # --------------------------------
+        # 1. TITLE MATCH — strongest
+        # --------------------------------
 
-        results.append(job)
+        if title:
 
-    return results
+            title_words = title.split()
 
+            matched_title_words = sum(
+                word in job_title
+                for word in title_words
+            )
 
+            score += matched_title_words * 50
+
+        # --------------------------------
+        # 2. SKILL MATCH
+        # --------------------------------
+
+        for skill in skills:
+
+            if skill in job_skills:
+                score += 10
+
+        # --------------------------------
+        # 3. LOCATION MATCH
+        # --------------------------------
+
+        if location:
+
+            if location == "remote":
+
+                remote_indicators = [
+                    "remote",
+                    "worldwide",
+                    "europe",
+                    "americas"
+                ]
+
+                if any(
+                    indicator in job_location
+                    for indicator in remote_indicators
+                ):
+                    score += 15
+
+            elif location in job_location:
+
+                score += 15
+
+        # --------------------------------
+        # Keep jobs with some relevance
+        # --------------------------------
+
+        if score > 0:
+
+            scored_results.append(
+                (score, job)
+            )
+
+    # --------------------------------
+    # Highest score first
+    # --------------------------------
+
+    scored_results.sort(
+        key=lambda item: item[0],
+        reverse=True
+    )
+
+    return [
+        job
+        for score, job in scored_results[:10]
+    ]
 
 def generate_insights():
 
