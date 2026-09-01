@@ -58,5 +58,31 @@ def initialize_database():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS job_tracking (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            job_id TEXT NOT NULL,
+            title TEXT,
+            job_url TEXT,
+            status TEXT DEFAULT 'saved',
+            saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            applied_at TIMESTAMP,
+            UNIQUE(user_id, job_id),
+            FOREIGN KEY (user_id) REFERENCES users(user_id)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS job_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            job_id TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id)
+        )
+    """)
+
     connection.commit()
     connection.close()
