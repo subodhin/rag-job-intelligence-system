@@ -30,7 +30,10 @@ from app.models.schemas import AskRequest
 from app.models.schemas import ContextAgentRequest
 from app.context.context_service import get_user_context, print_user_context,save_message
 from app.ai.groq_intent_detector import detect_intent_groq
-
+from fastapi.responses import RedirectResponse
+from app.tools.job_tools import record_job_event
+from app.services.external_jobs import get_jobs as get_external_jobs
+import json
 
 app = FastAPI(
     swagger_ui_parameters={
@@ -116,6 +119,32 @@ def get_jobs():
     jobs = load_jobs()
 
     return jobs
+
+@app.get("/jobs/{job_id}/apply")
+def apply_to_job(job_id: int, user_id: str):
+
+    jobs = get_external_jobs()
+
+    job = next(
+        (job for job in jobs if job.get("id") == job_id),
+        None
+    )
+
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+
+    record_job_event(
+        user_id,
+        job_id,
+        "apply_clicked"
+    )
+
+    return RedirectResponse(
+        url=job["job_url"]
+    )
 
 
 #straight map form external API 
@@ -521,7 +550,7 @@ async def ai_agent_context(request: ContextAgentRequest):
     save_message(
         user_id=request.user_id,
         role="assistant",
-        content=str(response)
+        content=json.dumps(response)
     )
 
     # ---------------------------------------

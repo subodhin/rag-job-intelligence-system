@@ -12,11 +12,13 @@ def get_jobs():
 
     for job in data["jobs"]:
 
-        normalized_jobs.append({
+            normalized_jobs.append({
+            "id": job["id"],
             "title": job["title"],
             "skills": job["tags"],
             "salary": job.get("salary", "Not specified"),
-            "location": job["candidate_required_location"]
+            "location": job["candidate_required_location"],
+            "job_url": job["url"]
         })
 
     return normalized_jobs
