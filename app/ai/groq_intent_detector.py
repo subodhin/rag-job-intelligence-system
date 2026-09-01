@@ -22,6 +22,7 @@ Classify the user query into exactly ONE of these intents:
 
 job_search
 market_insights
+job_action
 
 Examples:
 
@@ -39,6 +40,18 @@ market_insights
 
 What are the salary trends?
 market_insights
+
+Save this job
+job_action
+
+Bookmark this job
+job_action
+
+Mark this job as applied
+job_action
+
+Show my saved jobs
+job_action
 
 User query:
 {query}
@@ -87,7 +100,8 @@ Return ONLY valid JSON:
 
     if intent not in [
         "job_search",
-        "market_insights"
+        "market_insights",
+        "job_action"
     ]:
         return {
             "intent": "unknown"
