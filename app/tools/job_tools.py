@@ -1,22 +1,27 @@
-from app.services.data_service import search_jobs_by_filters
-from app.services.semantic_search_service import semantic_search
 from app.context.database import get_connection
 
-# Job search direct external api
+
+# Job search direct external API
 def search_jobs_tool(filters):
     """
     Search jobs using structured filters.
     """
+    from app.services.data_service import search_jobs_by_filters
+
     return search_jobs_by_filters(filters)
 
 
+# Semantic job search
 def semantic_job_search_tool(query, top_k=3):
     """
     Search jobs using semantic similarity.
     """
+    from app.services.semantic_search_service import semantic_search
+
     return semantic_search(query, top_k)
 
-# #agent workflow action
+
+# Agent workflow action
 def save_job(user_id, job):
     connection = get_connection()
     cursor = connection.cursor()
@@ -48,6 +53,8 @@ def save_job(user_id, job):
         "status": "saved"
     }
 
+
+# Track job status
 def track_job(user_id, job_id, status):
     connection = get_connection()
     cursor = connection.cursor()
@@ -82,6 +89,7 @@ def track_job(user_id, job_id, status):
     }
 
 
+# Record job event
 def record_job_event(user_id, job_id, event_type):
     connection = get_connection()
     cursor = connection.cursor()
@@ -108,6 +116,8 @@ def record_job_event(user_id, job_id, event_type):
         "job_id": job_id
     }
 
+
+# Get saved jobs
 def get_saved_jobs(user_id):
     connection = get_connection()
     cursor = connection.cursor()
