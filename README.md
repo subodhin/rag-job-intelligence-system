@@ -26,13 +26,13 @@ The **core AI architecture is already implemented and tested**, including LLM or
              Planning             Memory                  │
                   │                   │                   ▼
                   └───────────────────┼──────────── Existing Tools
-                                      │                    │
-                                      ▼                    │
-                              AI Intelligence              │
+                                      │                   │
+                                      ▼                   │
+                              AI Intelligence             │
                          ┌────────────┼────────────┐       │
                          ▼            ▼            ▼       │
                     Job Search       RAG      Semantic     │
-                         │            │         Search     │
+                         │            │         Search      │
                          └────────────┼────────────┘       │
                                       │                    │
                                       ▼                    ▼
@@ -106,100 +106,100 @@ http://localhost:8000/docs
 ### AI Search & RAG
 
 <pre align="center">
-                           User
-                            │
-                            ▼
-                           AI Agent
-                            │
-                            ├── Intent Detection
-                            │
-                            └── Query Planning
-                                     │
-                                     ▼
-                              Job Search / Semantic Search
-                                     │
-                                     ▼
-                                   Qdrant
-                                     │
-                                     ▼
-                                RAG Context
-                                     │
-                                     ▼
-                                 Ollama / Phi
-                                     │
-                                     ▼
-                              Grounded Response
+User
+ │
+ ▼
+AI Agent
+ │
+ ├── Intent Detection
+ │
+ └── Query Planning
+          │
+          ▼
+   Job Search / Semantic Search
+          │
+          ▼
+        Qdrant
+          │
+          ▼
+     RAG Context
+          │
+          ▼
+      Ollama / Phi
+          │
+          ▼
+   Grounded Response
 </pre>
 
 ### Context-Aware AI
 
 <pre align="center">
-                                 User Query
-                                     │
-                                     ▼
-                                 User Context
-                                     │
-                                     ├── Profile
-                                     ├── Skills
-                                     ├── Preferences
-                                     └── Conversation History
-                                     │
-                                     ▼
-                                 Intent Detection
-                                     │
-                                     ▼
-                                 Query Planning
-                                     │
-                                     ▼
-                                 Personalized Job Retrieval
+User Query
+    │
+    ▼
+User Context
+    │
+    ├── Profile
+    ├── Skills
+    ├── Preferences
+    └── Conversation History
+    │
+    ▼
+Intent Detection
+    │
+    ▼
+Query Planning
+    │
+    ▼
+Personalized Job Retrieval
 </pre>
 
 ### Job Action Workflow
 
 <pre align="center">
-                                    User
-                                     │
-                                     ▼
-                                    AI Agent
-                                     │
-                                     ▼
-                                    Intent + Context
-                                     │
-                                     ▼
-                                    Action Agent
-                                     │
-                                     ▼
-                                    Tool Router
-                                     │
-                                     ▼
-                                    Job Action Tool
-                                     │
-                                     ▼
-                                    SQLite
-                                     │
-                                     ▼
-                                    Action Result
-                                     │
-                                     ▼
-                                    AI Response
+User
+ │
+ ▼
+AI Agent
+ │
+ ▼
+Intent + Context
+ │
+ ▼
+Action Agent
+ │
+ ▼
+Tool Router
+ │
+ ▼
+Job Action Tool
+ │
+ ▼
+SQLite
+ │
+ ▼
+Action Result
+ │
+ ▼
+AI Response
 </pre>
 
 ### MCP Integration
 
 <pre align="center">
-                                 MCP Client
-                                     │
-                                     ▼
-                                 MCP Server
-                                     │
-                                     ▼
-                                 Existing Application Tools
-                                     │
-                                     ├── Job Search
-                                     ├── Semantic Search
-                                     ├── Save Job
-                                     ├── Track Job
-                                     └── Get Saved Jobs
+MCP Client
+    │
+    ▼
+MCP Server
+    │
+    ▼
+Existing Application Tools
+    │
+    ├── Job Search
+    ├── Semantic Search
+    ├── Save Job
+    ├── Track Job
+    └── Get Saved Jobs
 </pre>
 
 MCP is integrated as an additional interface over the existing tool layer rather than replacing the application's business logic.
@@ -563,6 +563,10 @@ Personalized Career Automation
 </pre>
 
 ---
+
+## Project
+
+**GitHub:** https://github.com/subodhin/rag-job-intelligence-system
 
 ## Author
 
