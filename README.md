@@ -2,10 +2,45 @@
 
 An AI-powered job intelligence system built to automate job discovery, intelligent search, career insights, and job application workflows.
 
-Built as a hands-on AI engineering project to explore and implement production-oriented patterns around **LLM orchestration, AI agents, RAG, semantic retrieval, vector databases, persistent context, tool execution, and MCP**.
+The **core AI architecture is already implemented and tested**, including LLM orchestration, AI agents, RAG, semantic retrieval, Qdrant, persistent context, tool execution, workflow actions, and MCP. The project is now expanding toward broader career intelligence and production deployment.
 
 **Status: Active Development**  
-**Core Architecture: Implemented**
+**Core Architecture: Implemented and Tested**
+
+---
+
+## Architecture Overview
+
+<pre align="center">
+                         AI Career Intelligence Platform
+                                      │
+                                      ▼
+                                     User
+                                      │
+                                      ▼
+                              AI Agent Layer
+                                      │
+                  ┌───────────────────┼───────────────────┐
+                  ▼                   ▼                   ▼
+             Intent &            Context &          Tool Execution
+             Planning             Memory                  │
+                  │                   │                   ▼
+                  └───────────────────┼──────────── Existing Tools
+                                      │                    │
+                                      ▼                    │
+                              AI Intelligence              │
+                         ┌────────────┼────────────┐       │
+                         ▼            ▼            ▼       │
+                    Job Search       RAG      Semantic     │
+                         │            │         Search     │
+                         └────────────┼────────────┘       │
+                                      │                    │
+                                      ▼                    ▼
+                               Data & Storage         MCP Interface
+                              ┌───────┼───────┐       ┌────────────┐
+                              ▼       ▼       ▼       ▼            ▼
+                           Job APIs Qdrant SQLite  MCP Server  MCP Client
+</pre>
 
 ---
 
@@ -16,6 +51,13 @@ Built as a hands-on AI engineering project to explore and implement production-o
 ```bash
 git clone https://github.com/subodhin/rag-job-intelligence-system.git
 cd rag-job-intelligence-system
+```
+
+### Create and activate virtual environment
+
+```bash
+python3 -m venv env
+source env/bin/activate
 ```
 
 ### Start Qdrant
@@ -35,8 +77,6 @@ python -m app.main
 ```text
 http://localhost:8000/docs
 ```
-
-> Project dependencies and environment configuration are currently managed locally during active development.
 
 ---
 
@@ -65,102 +105,102 @@ http://localhost:8000/docs
 
 ### AI Search & RAG
 
-```text
-User
- │
- ▼
-AI Agent
- │
- ├── Intent Detection
- │
- └── Query Planning
-          │
-          ▼
-   Job Search / Semantic Search
-          │
-          ▼
-        Qdrant
-          │
-          ▼
-     RAG Context
-          │
-          ▼
-      Ollama / Phi
-          │
-          ▼
-   Grounded Response
-```
+<pre align="center">
+                           User
+                            │
+                            ▼
+                           AI Agent
+                            │
+                            ├── Intent Detection
+                            │
+                            └── Query Planning
+                                     │
+                                     ▼
+                              Job Search / Semantic Search
+                                     │
+                                     ▼
+                                   Qdrant
+                                     │
+                                     ▼
+                                RAG Context
+                                     │
+                                     ▼
+                                 Ollama / Phi
+                                     │
+                                     ▼
+                              Grounded Response
+</pre>
 
 ### Context-Aware AI
 
-```text
-User Query
-    │
-    ▼
-User Context
-    │
-    ├── Profile
-    ├── Skills
-    ├── Preferences
-    └── Conversation History
-    │
-    ▼
-Intent Detection
-    │
-    ▼
-Query Planning
-    │
-    ▼
-Personalized Job Retrieval
-```
+<pre align="center">
+                                 User Query
+                                     │
+                                     ▼
+                                 User Context
+                                     │
+                                     ├── Profile
+                                     ├── Skills
+                                     ├── Preferences
+                                     └── Conversation History
+                                     │
+                                     ▼
+                                 Intent Detection
+                                     │
+                                     ▼
+                                 Query Planning
+                                     │
+                                     ▼
+                                 Personalized Job Retrieval
+</pre>
 
 ### Job Action Workflow
 
-```text
-User
- │
- ▼
-AI Agent
- │
- ▼
-Intent + Context
- │
- ▼
-Action Agent
- │
- ▼
-Tool Router
- │
- ▼
-Job Action Tool
- │
- ▼
-SQLite
- │
- ▼
-Action Result
- │
- ▼
-AI Response
-```
+<pre align="center">
+                                    User
+                                     │
+                                     ▼
+                                    AI Agent
+                                     │
+                                     ▼
+                                    Intent + Context
+                                     │
+                                     ▼
+                                    Action Agent
+                                     │
+                                     ▼
+                                    Tool Router
+                                     │
+                                     ▼
+                                    Job Action Tool
+                                     │
+                                     ▼
+                                    SQLite
+                                     │
+                                     ▼
+                                    Action Result
+                                     │
+                                     ▼
+                                    AI Response
+</pre>
 
 ### MCP Integration
 
-```text
-MCP Client
-    │
-    ▼
-MCP Server
-    │
-    ▼
-Existing Application Tools
-    │
-    ├── Job Search
-    ├── Semantic Search
-    ├── Save Job
-    ├── Track Job
-    └── Get Saved Jobs
-```
+<pre align="center">
+                                 MCP Client
+                                     │
+                                     ▼
+                                 MCP Server
+                                     │
+                                     ▼
+                                 Existing Application Tools
+                                     │
+                                     ├── Job Search
+                                     ├── Semantic Search
+                                     ├── Save Job
+                                     ├── Track Job
+                                     └── Get Saved Jobs
+</pre>
 
 MCP is integrated as an additional interface over the existing tool layer rather than replacing the application's business logic.
 
@@ -178,9 +218,7 @@ Implemented an agent workflow that can:
 - Use previous search results and user context
 - Produce grounded responses
 
-Example flow:
-
-```text
+<pre align="center">
 Natural Language
       ↓
 Intent Detection
@@ -192,17 +230,17 @@ Tool Selection
 Tool Execution
       ↓
 Response
-```
+</pre>
 
 ---
 
 ### 2. RAG + Semantic Retrieval
 
-Implemented two retrieval approaches:
+Implemented two retrieval approaches.
 
 **Structured retrieval**
 
-```text
+<pre align="center">
 Natural Language
       ↓
 Query Planner
@@ -210,11 +248,11 @@ Query Planner
 Structured Filters
       ↓
 Job Search
-```
+</pre>
 
 **Semantic retrieval**
 
-```text
+<pre align="center">
 Natural Language
       ↓
 Embedding
@@ -224,7 +262,7 @@ Qdrant
 Cosine Similarity
       ↓
 Relevant Jobs
-```
+</pre>
 
 The system uses `nomic-embed-text` embeddings with 768-dimensional vectors.
 
@@ -238,7 +276,7 @@ Implemented persistent user context using SQLite.
 
 Stored context includes:
 
-```text
+<pre align="center">
 User Profile
     ├── Target Role
     ├── Experience
@@ -250,7 +288,7 @@ Preferences
     └── Preferred Skills
 
 Conversation History
-```
+</pre>
 
 This allows vague follow-up queries such as:
 
@@ -276,7 +314,7 @@ get_saved_jobs
 
 Example workflow:
 
-```text
+<pre align="center">
 Find Job
    ↓
 Save Job
@@ -284,7 +322,7 @@ Save Job
 Track Application
    ↓
 Retrieve Saved Jobs
-```
+</pre>
 
 Job state is persisted in SQLite.
 
@@ -321,6 +359,40 @@ The MCP implementation reuses the existing application tools, keeping business l
 
 ---
 
+## Context-Aware Search
+
+The platform maintains persistent user context including:
+
+- Profile
+- Experience
+- Skills
+- Search preferences
+- Preferred locations
+- Conversation history
+
+This context is used during query planning and job retrieval to support personalized, multi-turn interactions.
+
+Example:
+
+```text
+User:
+"Show me some jobs"
+
+Context:
+Role = AI Engineer
+Skills = Python, RAG
+Location = Remote
+
+Planner:
+{
+  "title": "AI Engineer",
+  "skills": ["Python", "RAG"],
+  "location": "remote"
+}
+```
+
+---
+
 ## Current Capabilities
 
 | Capability | Status |
@@ -352,45 +424,49 @@ The MCP implementation reuses the existing application tools, keeping business l
 
 ## Testing
 
-The project includes dedicated tests for the major AI and infrastructure components.
+### Start API
 
-### Qdrant
+```bash
+uvicorn app.main:app --reload
+```
+
+### Test Qdrant
 
 ```bash
 python3 -m app.scripts.test_qdrant_collection
 ```
 
-### Semantic Retrieval
+### Test Semantic Retrieval
 
 ```bash
 python3 -m app.scripts.test_qdrant_semantic_search
 ```
 
-### FAISS vs Qdrant
+### Compare FAISS and Qdrant
 
 ```bash
 python3 -m app.scripts.compare_faiss_qdrant
 ```
 
-### Tool Router
+### Test Agent Tools
 
 ```bash
 python3 -m app.scripts.test_tool_router
 ```
 
-### MCP
+### Test MCP
 
 ```bash
 python -m app.mcp.test_client
 ```
 
-### Context Persistence
+### Inspect Persistent Context
 
 ```bash
 python3 -c "from app.context.context_service import get_user_context, print_user_context; print_user_context(get_user_context('user_002'))"
 ```
 
-### Job Action Regression
+### Test Job Action Workflow
 
 ```bash
 python -c "from app.agents.action_agent import handle_job_action; from app.context.context_service import get_user_context; print(handle_job_action('Save the first job', get_user_context('user_002')))"
@@ -472,7 +548,7 @@ app/
 
 ## Direction
 
-```text
+<pre align="center">
 Job Discovery
       ↓
 Intelligent Search
@@ -484,7 +560,7 @@ Job Actions & Tracking
 Career Intelligence
       ↓
 Personalized Career Automation
-```
+</pre>
 
 ---
 
@@ -492,4 +568,4 @@ Personalized Career Automation
 
 **Subodhi Nanayakkara** — Software Engineer with 6+ years of experience in full-stack and backend engineering, currently focused on AI engineering.
 
-This project represents a hands-on transition into AI engineering, combining software engineering experience with practical implementation of LLMs, AI agents, RAG, semantic retrieval, vector databases, tool execution, context/memory, and MCP.
+This project represents a hands-on transition into AI engineering, combining software engineering experience with practical implementation of **LLMs, AI agents, RAG, semantic retrieval, vector databases, tool execution, context and memory, workflow automation, and MCP**.
