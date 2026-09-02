@@ -1,11 +1,11 @@
 import json
-from urllib import response
+#from urllib import response
 
-import faiss
+#import faiss
 from app.services.external_jobs import get_jobs
-import ollama
-from app.embedding_functions.create_job_embedding import embed_jobs
-from app.services.vector_service import create_index, save_index
+#import ollama
+#from app.embedding_functions.create_job_embedding import embed_jobs
+#from app.services.vector_service import create_index, save_index
 import os
 
 def load_jobs():

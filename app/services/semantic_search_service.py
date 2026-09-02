@@ -1,13 +1,15 @@
-import json
+#import json
 
-import faiss
+#import faiss
 import numpy as np
 import ollama
 
-from app.services.vector_service import INDEX_PATH, search_index
+#from app.services.vector_service import INDEX_PATH, search_index
 
 # Qdrant
 from app.services.qdrant_service import client, COLLECTION_NAME
+import sys
+
 
 
 METADATA_PATH = "data/job_metadata.json"
@@ -15,11 +17,19 @@ METADATA_PATH = "data/job_metadata.json"
 
 def semantic_search(query: str, top_k: int = 3):
 
+    # print(
+    #     "Semantic Search Query:::::",
+    #     query,
+    #     "Top K:::::",
+    #     top_k
+    # )
+
     print(
         "Semantic Search Query:::::",
-        query,
+         query,
         "Top K:::::",
-        top_k
+        top_k,
+        file=sys.stderr
     )
 
     # ==================================================
