@@ -13,7 +13,7 @@ The **core AI architecture is already implemented and tested**, including LLM or
 
 <pre align="center">
                         <p align="center">
-  <img src="architecture_d_mvp2.png" alt="AI Career Intelligence Platform Architecture">
+  <img src="architecture__D_mvp2.png" alt="AI Career Intelligence Platform Architecture">
 </p></pre>
 
 ---
