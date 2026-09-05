@@ -12,35 +12,9 @@ The **core AI architecture is already implemented and tested**, including LLM or
 ## Architecture Overview
 
 <pre align="center">
-                         AI Career Intelligence Platform
-                                      │
-                                      ▼
-                                     User
-                                      │
-                                      ▼
-                              AI Agent Layer
-                                      │
-                  ┌───────────────────┼───────────────────┐
-                  ▼                   ▼                   ▼
-             Intent &            Context &          Tool Execution
-             Planning             Memory                  │
-                  │                   │                   ▼
-                  └───────────────────┼──────────── Existing Tools
-                                      │                   │
-                                      ▼                   │
-                              AI Intelligence             │
-                         ┌────────────┼────────────┐       │
-                         ▼            ▼            ▼       │
-                    Job Search       RAG      Semantic     │
-                         │            │         Search      │
-                         └────────────┼────────────┘       │
-                                      │                    │
-                                      ▼                    ▼
-                               Data & Storage         MCP Interface
-                              ┌───────┼───────┐       ┌────────────┐
-                              ▼       ▼       ▼       ▼            ▼
-                           Job APIs Qdrant SQLite  MCP Server  MCP Client
-</pre>
+                        <p align="center">
+  <img src="architecture_d_mvp2.png" alt="AI Career Intelligence Platform Architecture">
+</p></pre>
 
 ---
 
