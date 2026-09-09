@@ -233,6 +233,7 @@ def insights():
 async def classify_intent(query: AskRequest):
 
     print("Classifying Intent for Query:::::", query.query)
+    #phi SLM model for intent detection
     result = detect_intent(query.query)
 
     print("Detected Intent:::::", result)
@@ -246,8 +247,11 @@ async def ai_agent(request: AskRequest):
 
     print(":::::::::::::::::::/ai-agent:::::::::::::::::")
     print("User input ::::", request)
+    print("test:::::::>>")
 
-    intent_result = detect_intent(request.query)
+    #intent_result = detect_intent(request.query)
+    intent_result = detect_intent_groq(request.query)
+
 
     print("::::::::::::::::::::::intent:::::::::::::::::::",intent_result)
 
@@ -261,7 +265,7 @@ async def ai_agent(request: AskRequest):
 #     user_context
 # )
 
-    
+    print("API ::::::::::::::::::::::response:::::::::::::::::::",response)
 
     return response
 
@@ -354,7 +358,7 @@ def rag_v2(request: AskRequest):
     # --------------------------------------------------
     context = format_jobs_context(context_jobs)
 
-    print("RAG Context:")
+    print("RAG Context:::::::")
     print(context)
 
     # --------------------------------------------------
