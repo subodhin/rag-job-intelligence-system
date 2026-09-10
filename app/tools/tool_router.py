@@ -12,8 +12,12 @@ def select_tool(intent: str, query: str):
 
     query_lower = query.lower()
 
-    if intent == "job_search":
+    if isinstance(intent, dict):
+        intent = intent.get("intent")
+        print("slecting tool query check:::::2", query_lower, intent)
 
+
+    if intent == "job_search":
         if any(
             word in query_lower
             for word in ["semantic", "similar", "experience", "looking for"]
@@ -65,7 +69,7 @@ def execute_tool(tool_name: str, query: str, user_id=None, job=None):
 
     if tool_name == "job_insights":
         return tool()
-
+#todo: add user_id and job to the tool execution
     if tool_name == "save_job":
 
         if not user_id or not job:
