@@ -457,7 +457,10 @@ def agent(request: AskRequest):
     query = request.query
 
     # 1. Detect intent
-    intent = detect_intent(query)
+   # intent = detect_intent(query)
+    
+    intent = detect_intent_groq(query)
+
 
     print("User Query:", query)
     print("Detected Intent::::::::::::::::::::::::::::::::::::::::::::::::::::", intent)
