@@ -523,6 +523,7 @@ async def ai_agent_context(request: ContextAgentRequest):
     # Detect intent
     # ---------------------------------------
 
+# LLM through groq model for intent detection
     intent_result = detect_intent_groq(request.query)
 
     print(
