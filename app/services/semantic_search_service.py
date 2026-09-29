@@ -33,7 +33,8 @@ def semantic_search(query: str, top_k: int = 3):
     )
 
     # ==================================================
-    # OLD FAISS IMPLEMENTATION
+    # OLD FAISS IMPLEMENTATION --- library for similarity search --> Facebook AI Similarity Search 
+    # since its not DB migrated to Qdrant, we will keep the old code for comparison
     # KEEP FOR COMPARISON
     # ==================================================
 
@@ -44,7 +45,7 @@ def semantic_search(query: str, top_k: int = 3):
     # with open(METADATA_PATH, "r") as f:
     #     job_metadata = json.load(f)
 
-    # Convert query to embedding
+    # Convert query to embedding-----
     response = ollama.embed(
         model="nomic-embed-text",
         input=query
