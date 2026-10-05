@@ -1,12 +1,16 @@
-from fastapi import FastAPI, HTTPException
+import uuid
+import os
+
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from opentelemetry import context
 import requests
 import time
 
 # from app import rag_prompt
 from app.prompts import SYSTEM_PROMPT
-from app.models.schemas import AskRequest
+from app.models.schemas import AskRequest, CVSearchRequest
 from app.services import semantic_search_service
+from app.services.cv_parser import parse_cv
 from app.services.data_service import (
     load_jobs,
     search_jobs,
@@ -34,6 +38,18 @@ from fastapi.responses import RedirectResponse
 from app.tools.job_tools import record_job_event
 from app.services.external_jobs import get_jobs as get_external_jobs
 import json
+from app.services.cv_processor import chunk_documents
+from app.services.cv_embeddings import embed_documents
+
+from app.services.cv_vector_store import (
+    ensure_cv_collection,
+    store_cv_embeddings
+)
+from app.services.cv_embeddings import embed_documents
+from app.services.cv_vector_store import search_cv
+
+from app.services.cv_embeddings import embed_query
+from app.services.cv_vector_store import search_cv
 
 app = FastAPI(
     swagger_ui_parameters={
@@ -575,3 +591,73 @@ async def ai_agent_context(request: ContextAgentRequest):
         "intent": intent_result,
         "response": response
     }
+
+@app.post("/cv/upload")
+async def upload_cv(file: UploadFile = File(...)):
+
+    if file.content_type != "application/pdf":
+        return {
+            "error": "Only PDF files are supported"
+        }
+
+    cv_id = f"cv_{uuid.uuid4().hex[:8]}"
+
+    upload_dir = "data/cv_uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+
+    file_path = os.path.join(
+        upload_dir,
+        f"{cv_id}.pdf"
+    )
+
+    content = await file.read()
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    documents = parse_cv(file_path)
+    chunks = chunk_documents(documents)
+    embedded_chunks = embed_documents(chunks)
+    ensure_cv_collection()
+
+    stored = store_cv_embeddings(
+    cv_id,
+    embedded_chunks
+)
+
+    return {
+    "cv_id": cv_id,
+    "filename": file.filename,
+    "pages": len(documents),
+    "chunks": len(chunks),
+    "embeddings": len(embedded_chunks),
+    "vector_size": len(embedded_chunks[0]["vector"]),
+    "stored": stored,
+    "status": "stored"
+}
+
+@app.post("/cv/search")
+async def cv_search(request: CVSearchRequest):
+
+    query_vector = embed_query(request.query)
+
+    results = search_cv(
+        request.cv_id,
+        query_vector,
+        top_k=3
+    )
+
+    return {
+        "cv_id": request.cv_id,
+        "query": request.query,
+        "results": [
+            {
+                "text": result.payload["text"],
+                "page": result.payload["page"],
+                "chunk_index": result.payload["chunk_index"],
+                "score": result.score
+            }
+            for result in results
+        ]
+    }
+    
