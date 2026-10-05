@@ -8,3 +8,8 @@ class ContextAgentRequest(BaseModel):
 
     user_id: str
     query: str
+
+
+class CVSearchRequest(BaseModel):
+    cv_id: str
+    query: str
