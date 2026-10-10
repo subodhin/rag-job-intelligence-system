@@ -538,10 +538,6 @@ Personalized Career Automation
 
 ---
 
-## Project
-
-**GitHub:** https://github.com/subodhin/rag-job-intelligence-system
-
 ## Author
 
 **Subodhi Nanayakkara** — Software Engineer with 6+ years of experience in full-stack and backend engineering, currently focused on AI engineering.
