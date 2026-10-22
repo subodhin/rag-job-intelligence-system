@@ -522,7 +522,7 @@ async def ai_agent_context(request: ContextAgentRequest):
     print("User Query:", request.query)
 
     # ---------------------------------------
-    # Load existing persistent user context
+    # Load existing persistent user context -- UI intergration ready
     # ---------------------------------------
 
     user_context = get_user_context(request.user_id)
