@@ -2,6 +2,7 @@ import uuid
 import os
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from opentelemetry import context
 import requests
 import time
@@ -56,6 +57,19 @@ app = FastAPI(
         "syntaxHighlight.theme": "obsidian"
     }
 )
+
+# Allow the local Next.js frontend to call this FastAPI backend.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(context_router)
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
