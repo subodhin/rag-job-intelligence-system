@@ -258,13 +258,16 @@ def insights():
 
     return data
 
-
 @app.post("/intent")
 async def classify_intent(query: AskRequest):
 
     print("Classifying Intent for Query:::::", query.query)
+    
     #phi SLM model for intent detection
-    result = detect_intent(query.query)
+    #result = detect_intent(query.query)
+
+    #used for deplyment with groq model for intent detection
+    result = detect_intent_groq(query.query)
 
     print("Detected Intent:::::", result)
 
