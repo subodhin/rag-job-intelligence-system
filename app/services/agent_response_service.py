@@ -1,14 +1,11 @@
-import requests
-from typer import prompt
 
-#from app.config import OLLAMA_URL
+from app.ai.groq_generation_service import generate_response
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
 
 def generate_tool_response(query: str, tool_name: str, tool_result):
-    print("User query:::::::::::::::::::::::::::::::::", query)
-    print("Tool name::::::::::::::::::::::::::::::::::", tool_name)
-    print("Tool result::::::::::::::::::::::::::::::::", tool_result)
+    print("User query:", query)
+    print("Tool name:", tool_name)
+    print("Tool result:", tool_result)
 
     prompt = f"""
 You are an AI job assistant.
@@ -41,19 +38,11 @@ title, skills, salary, and location.
 If the data does not contain enough information, say:
 "The available job data does not provide enough information."
 """
-    print("prompt sent to Phi for tool response generation::::::::::::::::::::::::::::::::::::", prompt)
 
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": "phi",
-            "prompt": prompt,
-            "stream": False
-        }
-    )
-    response.raise_for_status()
+    print("Prompt sent to Groq for tool response generation.")
 
-    data = response.json()
-    print("Tool Response from Phi:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    ai_response = generate_response(prompt)
 
-    return data["response"]
+    print("Tool response received from Groq.")
+
+    return ai_response

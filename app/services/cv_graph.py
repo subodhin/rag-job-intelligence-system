@@ -1,11 +1,11 @@
-from typing import TypedDict, List, Dict, Any
 
-import requests
+from typing import TypedDict, List, Dict, Any
 
 from langgraph.graph import StateGraph, START, END
 
 from app.services.cv_embeddings import embed_query
 from app.services.cv_vector_store import search_cv
+from app.ai.groq_generation_service import generate_response
 
 
 class CVGraphState(TypedDict):
@@ -93,20 +93,9 @@ QUESTION:
 Give a concise, factual answer.
 """
 
-    response = requests.post(
-        "http://localhost:11434/api/generate",
-        json={
-            "model": "phi",
-            "prompt": prompt,
-            "stream": False
-        }
-    )
+    answer = generate_response(prompt)
 
-    response.raise_for_status()
-
-    answer = response.json()["response"]
-
-    print("Answer generated")
+    print("Answer generated using Groq")
 
     return {
         "answer": answer

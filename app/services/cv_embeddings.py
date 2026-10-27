@@ -1,22 +1,20 @@
-import requests
+
+from app.services.embedding_service import create_embedding
 
 
 def embed_documents(documents):
     embeddings = []
 
     for doc in documents:
-        response = requests.post(
-            "http://localhost:11434/api/embed",
-            json={
-                "model": "nomic-embed-text",
-                "input": doc.page_content
-            }
+        vector = create_embedding(
+            doc.page_content,
+            task_type="RETRIEVAL_DOCUMENT"
         )
 
-        response.raise_for_status()
-
-        vector = response.json()["embeddings"][0]
-        print(f"Document embedded. Length of vector::::::::::::::: {len(vector)}")
+        print(
+            f"Document embedded. "
+            f"Vector dimensions: {len(vector)}"
+        )
 
         embeddings.append({
             "document": doc,
@@ -25,15 +23,9 @@ def embed_documents(documents):
 
     return embeddings
 
+
 def embed_query(query: str):
-    response = requests.post(
-        "http://localhost:11434/api/embed",
-        json={
-            "model": "nomic-embed-text",
-            "input": query
-        }
+    return create_embedding(
+        query,
+        task_type="RETRIEVAL_QUERY"
     )
-
-    response.raise_for_status()
-
-    return response.json()["embeddings"][0]

@@ -1,114 +1,39 @@
-#import json
-
-#import faiss
-import numpy as np
-import ollama
-
-#from app.services.vector_service import INDEX_PATH, search_index
-
-# Qdrant
-from app.services.qdrant_service import client, COLLECTION_NAME
 import sys
 
-
-
-METADATA_PATH = "data/job_metadata.json"
+from app.services.embedding_service import create_embedding
+from app.services.qdrant_service import client, COLLECTION_NAME
 
 
 def semantic_search(query: str, top_k: int = 3):
-
-    # print(
-    #     "Semantic Search Query:::::",
-    #     query,
-    #     "Top K:::::",
-    #     top_k
-    # )
-
     print(
-        "Semantic Search Query:::::",
-         query,
-        "Top K:::::",
+        "Semantic Search Query:",
+        query,
+        "Top K:",
         top_k,
-        file=sys.stderr
+        file=sys.stderr,
     )
 
-    # ==================================================
-    # OLD FAISS IMPLEMENTATION --- library for similarity search --> Facebook AI Similarity Search 
-    # since its not DB migrated to Qdrant, we will keep the old code for comparison
-    # KEEP FOR COMPARISON
-    # ==================================================
-
-    # Load FAISS index
-    # index = faiss.read_index(INDEX_PATH)
-
-    # Load job metadata
-    # with open(METADATA_PATH, "r") as f:
-    #     job_metadata = json.load(f)
-
-    # Convert query to embedding-----
-    response = ollama.embed(
-        model="nomic-embed-text",
-        input=query
+    # Generate query embedding using Gemini
+    query_vector = create_embedding(
+        query,
+        task_type="RETRIEVAL_QUERY",
     )
 
-    query_vector = np.array(
-        [response["embeddings"][0]],
-        dtype="float32"
-    )
-
-    # ==================================================
-    # OLD FAISS NORMALIZATION
-    # ==================================================
-
-    # faiss.normalize_L2(query_vector)
-
-    # ==================================================
-    # OLD FAISS SEARCH
-    # ==================================================
-
-    # distances, indices = search_index(
-    #     index,
-    #     query_vector,
-    #     top_k=top_k
-    # )
-
-    # ==================================================
-    # OLD FAISS RESULT MAPPING
-    # ==================================================
-
-    # results = []
-
-    # for rank, vector_id in enumerate(indices[0]):
-    #     results.append({
-    #         "job": job_metadata[vector_id],
-    #         "similarity": float(distances[0][rank])
-    #     })
-
-    # return results
-
-
-    # ==================================================
-    # NEW QDRANT SEARCH
-    # ==================================================
-
+    # Search Qdrant Cloud
     results = client.query_points(
         collection_name=COLLECTION_NAME,
-        query=query_vector[0].tolist(),
+        query=query_vector,
         limit=top_k,
-        with_payload=True
+        with_payload=True,
     )
 
-    # ==================================================
-    # FORMAT QDRANT RESULTS
-    # ==================================================
-
+    # Format results
     qdrant_results = []
 
     for point in results.points:
-
         qdrant_results.append({
             "job": point.payload,
-            "similarity": float(point.score)
+            "similarity": float(point.score),
         })
 
     return qdrant_results
