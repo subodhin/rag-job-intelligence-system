@@ -64,13 +64,20 @@ app = FastAPI(
     }
 )
 
-# Allow the local Next.js frontend to call this FastAPI backend.
+# Allow local development and the deployed Next.js frontend.
+frontend_url = os.getenv("FRONTEND_URL", "").strip().rstrip("/")
+
+allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
