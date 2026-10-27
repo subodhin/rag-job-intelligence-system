@@ -1,3 +1,4 @@
+from urllib import response
 import uuid
 import os
 
@@ -35,6 +36,8 @@ from app.models.schemas import AskRequest
 from app.models.schemas import ContextAgentRequest
 from app.context.context_service import get_user_context, print_user_context,save_message
 from app.ai.groq_intent_detector import detect_intent_groq
+from app.context.database import initialize_database
+from app.ai.groq_generation_service import generate_response
 from fastapi.responses import RedirectResponse
 from app.tools.job_tools import record_job_event
 from app.services.external_jobs import get_jobs as get_external_jobs
@@ -51,6 +54,9 @@ from app.services.cv_vector_store import search_cv
 
 from app.services.cv_embeddings import embed_query
 from app.services.cv_vector_store import search_cv
+import time
+from fastapi import HTTPException
+from app.ai.groq_generation_service import generate_response
 
 app = FastAPI(
     swagger_ui_parameters={
@@ -72,7 +78,7 @@ app.add_middleware(
 
 app.include_router(context_router)
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+#OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
 @app.get("/")
@@ -81,11 +87,10 @@ def home():
         "message": "AI Job Assistant Running!"
     }
 
-
 @app.post("/ask")
 def ask(request: AskRequest):
-
     query = request.query.lower()
+
     job_keywords = [
         "job",
         "salary",
@@ -94,52 +99,36 @@ def ask(request: AskRequest):
         "python",
         "react",
         "backend",
-        "frontend"
+        "frontend",
     ]
 
     if not any(word in query for word in job_keywords):
-
         raise HTTPException(
             status_code=400,
-            detail="Only job-related queries are allowed."
+            detail="Only job-related queries are allowed.",
         )
 
     full_prompt = f"""
     {SYSTEM_PROMPT}
 
-
     User Question:
     {request.query}
     """
 
-    print("Your Query:::::", request.query)
+    print("Your Query:", request.query)
 
     try:
-      # print("Query sent:::::")
-        response = requests.post(
-            OLLAMA_URL,
-            json={
-                "model": "phi",
-                "prompt": full_prompt,
-                "stream": False
-            }
-            
-        )
-       
+        ai_response = generate_response(full_prompt)
 
-        data = response.json()
-        print("Response received:::::", data["response"])
+        print("Response received:", ai_response)
 
-        return {
-            "response": data["response"]
-        }
+        return {"response": ai_response}
 
     except Exception as e:
-        print("Exception occurred:::::", str(e))
-
+        print("Exception occurred:", str(e))
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail="Failed to generate an AI response.",
         )
 
 @app.get("/jobs")
@@ -188,21 +177,71 @@ def search(skill: str):
     }
 
 #external ai job listing based on that AI responses with resources used
+# @app.post("/search-ai")
+# def search_ai(request: AskRequest):
+
+#     query = request.query
+
+#     filters = parse_query(query)
+
+#     print("Parsed Filters:")
+#     print("filters:::::::::::::",filters)
+
+#     matched_jobs = search_jobs_by_filters(filters)
+
+#     context = format_jobs_context(matched_jobs)
+
+#     print("Formatted Context::::::")
+#     print(context)
+
+#     full_prompt = f"""
+#     {SYSTEM_PROMPT}
+
+#     Relevant Job Data:
+#     {context}
+
+#     User Question:
+#     {query}
+#     """
+#     print("Full Prompt Sent to AI::::::",full_prompt)
+#     try:
+
+#         response = requests.post(
+#             OLLAMA_URL,
+#             json={
+#                 "model": "phi",
+#                 "prompt": full_prompt,
+#                 "stream": False
+#             }
+#         )
+
+#         data = response.json()
+#         print("AI Response::::::::::::::", data["response"])
+#         return {
+#             "filters": filters,
+#             "matched_jobs": matched_jobs,
+#             "ai_response": data["response"]
+#         }
+
+#     except Exception as e:
+
+#         raise HTTPException(
+#             status_code=500,
+#             detail=str(e)
+#         )
 @app.post("/search-ai")
 def search_ai(request: AskRequest):
-
     query = request.query
 
     filters = parse_query(query)
 
     print("Parsed Filters:")
-    print("filters:::::::::::::",filters)
+    print("Filters:", filters)
 
     matched_jobs = search_jobs_by_filters(filters)
-
     context = format_jobs_context(matched_jobs)
 
-    print("Formatted Context::::::")
+    print("Formatted Context:")
     print(context)
 
     full_prompt = f"""
@@ -214,31 +253,26 @@ def search_ai(request: AskRequest):
     User Question:
     {query}
     """
-    print("Full Prompt Sent to AI::::::",full_prompt)
+
+    print("Full Prompt Sent to AI:", full_prompt)
+
     try:
+        ai_response = generate_response(full_prompt)
 
-        response = requests.post(
-            OLLAMA_URL,
-            json={
-                "model": "phi",
-                "prompt": full_prompt,
-                "stream": False
-            }
-        )
+        print("AI Response:", ai_response)
 
-        data = response.json()
-        print("AI Response::::::::::::::", data["response"])
         return {
             "filters": filters,
             "matched_jobs": matched_jobs,
-            "ai_response": data["response"]
+            "ai_response": ai_response,
         }
 
     except Exception as e:
+        print("AI generation failed:", str(e))
 
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail="Failed to generate an AI response.",
         )
     
 @app.get("/parse-query")
@@ -312,11 +346,8 @@ def semantic_search(request: AskRequest):
 )
     return {"results": results}
 
-
-#
 @app.post("/rag-v2")
 def rag_v2(request: AskRequest):
-    
 
     query = request.query
 
@@ -329,7 +360,7 @@ def rag_v2(request: AskRequest):
     print(filters)
 
     # --------------------------------------------------
-    # 2. Semantic retrieval using FAISS
+    # 2. Semantic retrieval using Gemini embeddings + Qdrant
     # --------------------------------------------------
     retrieved_results = semantic_search_service.semantic_search(
         query=query,
@@ -340,7 +371,7 @@ def rag_v2(request: AskRequest):
     print(retrieved_results)
 
     # --------------------------------------------------
-    # 3. Extract jobs from FAISS results
+    # 3. Extract jobs from semantic search results
     # --------------------------------------------------
     retrieved_jobs = [
         result["job"]
@@ -352,8 +383,7 @@ def rag_v2(request: AskRequest):
     # --------------------------------------------------
     required_skills = filters.get("skills") or []
 
-    # Support your existing parser which currently
-    # returns a single "skill" field
+    # Support parser returning a single "skill" field
     if not required_skills and filters.get("skill"):
         required_skills = [filters["skill"]]
 
@@ -377,7 +407,6 @@ def rag_v2(request: AskRequest):
     context_jobs = []
 
     for item in validated_jobs:
-
         job = item["job"]
 
         context_jobs.append({
@@ -387,11 +416,11 @@ def rag_v2(request: AskRequest):
         })
 
     # --------------------------------------------------
-    # 7. Format context for Phi
+    # 7. Format context for the AI model
     # --------------------------------------------------
     context = format_jobs_context(context_jobs)
 
-    print("RAG Context:::::::")
+    print("RAG Context:")
     print(context)
 
     # --------------------------------------------------
@@ -420,37 +449,24 @@ Rules:
 Answer the question using only the JOB DATA.
 """
 
-    print("Prompt Sent to Phi:")
+    print("Prompt sent to Groq:")
     print(rag_prompt)
+
     # --------------------------------------------------
-    # 9. Send prompt to Phi + measure LLM latency
+    # 9. Generate response using Groq + measure latency
     # --------------------------------------------------
     try:
-
         start_time = time.perf_counter()
 
-        response = requests.post(
-            OLLAMA_URL,
-            json={
-                "model": "phi",
-                "prompt": rag_prompt,
-                "stream": False
-            }
-        )
+        ai_response = generate_response(rag_prompt)
 
         llm_response_time = time.perf_counter() - start_time
 
-        response.raise_for_status()
-
-        data = response.json()
-
-        ai_response = data["response"]
-
-        print("Phi Response:")
+        print("Groq Response:")
         print(ai_response)
 
         print(
-            f"Phi response time: "
+            f"Groq response time: "
             f"{llm_response_time:.2f} seconds"
         )
 
@@ -468,19 +484,14 @@ Answer the question using only the JOB DATA.
             )
         }
 
-    except requests.exceptions.RequestException as e:
-
-        raise HTTPException(
-            status_code=500,
-            detail=f"LLM request failed: {str(e)}"
-        )
-
     except Exception as e:
+        print("RAG-v2 generation failed:", str(e))
 
         raise HTTPException(
             status_code=500,
-            detail=str(e)
+            detail="Failed to generate an AI response."
         )
+
 
 @app.post("/agent")
 def agent(request: AskRequest):
