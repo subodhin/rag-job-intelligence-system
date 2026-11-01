@@ -393,6 +393,7 @@ def print_user_context(user_context):
     if not user_context:
         print("No user context found.")
         return
+    print("testing content::::::::::::::::::::")
 
     print("\n" + "=" * 60)
     print("                 USER CONTEXT")
