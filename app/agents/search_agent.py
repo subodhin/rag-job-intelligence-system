@@ -24,7 +24,8 @@ def handle_job_search(query: str, user_context=None):
 
     profile = user_context.get("profile", {}) if user_context else {}
     preferences = user_context.get("preferences", {}) if user_context else {}
-    conversation = user_context.get("conversation", []) if user_context else []
+    #conversation = user_context.get("conversation", []) if user_context else []
+    conversation = user_context.get("conversation", [])[-6:] if user_context else []
 
     # Convert conversation into readable text
     conversation_text = "\n".join(
