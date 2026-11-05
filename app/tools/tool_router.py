@@ -65,6 +65,7 @@ def execute_tool(tool_name: str, query: str, user_id=None, job=None):
         return tool(query, top_k=3)
 
     if tool_name == "search_jobs":
+        #todo
         return tool({})
 
     if tool_name == "job_insights":

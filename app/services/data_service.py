@@ -1,74 +1,38 @@
-import json
-#from urllib import response
 
-#import faiss
+import json
 from app.services.external_jobs import get_jobs
-#import ollama
-#from app.embedding_functions.create_job_embedding import embed_jobs
-#from app.services.vector_service import create_index, save_index
 import os
+
 
 def load_jobs():
 
     with open("app/data/jobs.json", "r") as file:
-
         jobs = json.load(file)
 
     return jobs
 
-# def search_jobs(skill: str):
-#     jobs = get_jobs()
-#     print("embedding testing::::",jobs[0])
-#     results = []
-
-#     embedded_jobs = embed_jobs(jobs)
-
-#     #index = create_index(embedded_jobs)
-
-#     print("Number of vectors:", index.ntotal)
-#     print("Vector dimension:", index.d)
-
-#     os.makedirs("data", exist_ok=True)
-#     index = create_index(embedded_jobs)
-
-
-
-#     save_index(index)
-#    # faiss.write_index(index, INDEX_PATH)
-#    # print(f"Index saved to: {INDEX_PATH}")
-
-#     print("Jobs:>>>>>", len(jobs))
-#     print("Embedded:>>>>>", len(embedded_jobs))
-#     print("Vector length:>>>>>>>>", len(embedded_jobs[0]["embedding"]))
-
-#     query = skill.lower()
-
-#     for job in jobs:
-#         skills = [s.lower() for s in job["skills"]]
-
-#         if any(s in query for s in skills):
-#             results.append(job)
-
-#     print("actaul result ::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results)
-
-#     return results
-
-
 
 def search_jobs(skill: str):
+
     jobs = get_jobs()
     results = []
 
     query = skill.lower()
 
     for job in jobs:
-        skills = [s.lower() for s in job["skills"]]
 
-        if any(s in query for s in skills):
+        skills = [
+            skill.lower()
+            for skill in job["skills"]
+        ]
+
+        if any(skill in query for skill in skills):
             results.append(job)
-    print("actaul result ::::::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results)
+
+    print("Actual result:", results)
 
     return results
+
 
 def format_jobs_context(jobs):
 
@@ -89,62 +53,10 @@ def format_jobs_context(jobs):
 
         context_lines.append(line)
 
-        print(
-            "Service - Formatted job context:\n",
-            line
-        )
+        print("Service - Formatted job context:\n", line)
 
     return "\n".join(context_lines)
 
-
-
-
-# def format_jobs_context(jobs):
-
-#     context = ""
-
-#     for job in jobs:
-
-#         context += f"""
-#         Job Title: {job['title']}
-#         Skills: {', '.join(job['skills'])}
-#         Salary: {job['salary']}
-#         Location: {job['location']}
-
-#         """
-
-#     return context
-
-
-# def search_jobs_by_filters(filters):
-
-# #local data set test!
-#    # jobs = load_jobs()
-
-#    #external API data set test!
-#     jobs = get_jobs()
-
-#     results = []
-
-#     for job in jobs:
-
-#         # Skill filtering
-#         if filters["skill"]:
-
-#             skills = [s.lower() for s in job["skills"]]
-
-#             if filters["skill"] not in skills:
-#                 continue
-
-#         # Location filtering
-#         if filters["location"]:
-
-#             if filters["location"].lower() != job["location"].lower():
-#                 continue
-
-#         results.append(job)
-
-#     return results
 
 def search_jobs_by_filters(filters):
 
@@ -179,10 +91,7 @@ def search_jobs_by_filters(filters):
 
         score = 0
 
-        # --------------------------------
-        # 1. TITLE MATCH — strongest
-        # --------------------------------
-
+        # 1. TITLE MATCH
         if title:
 
             title_words = title.split()
@@ -194,19 +103,13 @@ def search_jobs_by_filters(filters):
 
             score += matched_title_words * 50
 
-        # --------------------------------
         # 2. SKILL MATCH
-        # --------------------------------
-
         for skill in skills:
 
             if skill in job_skills:
                 score += 10
 
-        # --------------------------------
         # 3. LOCATION MATCH
-        # --------------------------------
-
         if location:
 
             if location == "remote":
@@ -225,23 +128,13 @@ def search_jobs_by_filters(filters):
                     score += 15
 
             elif location in job_location:
-
                 score += 15
 
-        # --------------------------------
-        # Keep jobs with some relevance
-        # --------------------------------
-
+        # Keep relevant jobs
         if score > 0:
+            scored_results.append((score, job))
 
-            scored_results.append(
-                (score, job)
-            )
-
-    # --------------------------------
     # Highest score first
-    # --------------------------------
-
     scored_results.sort(
         key=lambda item: item[0],
         reverse=True
@@ -251,37 +144,172 @@ def search_jobs_by_filters(filters):
         job
         for score, job in scored_results[:10]
     ]
+def get_jobs_for_skill_analysis(target_role: str):
+
+    if not target_role:
+        return []
+
+    jobs = get_jobs()
+
+    target = target_role.lower()
+
+    # Direct AI engineering role keywords
+    direct_keywords = [
+        "ai engineer",
+        "artificial intelligence engineer",
+        "machine learning engineer",
+        "ml engineer",
+        "llm engineer",
+        "generative ai engineer",
+        "deep learning engineer",
+        "nlp engineer"
+    ]
+
+    # Adjacent technical roles
+    adjacent_keywords = [
+        "software engineer",
+        "backend developer",
+        "back-end developer",
+        "full-stack developer",
+        "data engineer"
+    ]
+
+    ai_keywords = [
+        "ai/ml",
+        "artificial intelligence",
+        "machine learning",
+        "deep learning",
+        "llm",
+        "rag",
+        "nlp",
+        "generative ai"
+    ]
+
+    direct_matches = []
+    adjacent_matches = []
+
+    for job in jobs:
+
+        job_title = job.get("title", "").lower()
+
+        job_tags = [
+            tag.lower().strip()
+            for tag in job.get("skills", [])
+        ]
+
+        has_ai_tag = any(
+            keyword in tag
+            for keyword in ai_keywords
+            for tag in job_tags
+        )
+
+        # Direct role matching
+        if any(keyword in job_title for keyword in direct_keywords):
+            direct_matches.append(job)
+
+        # Adjacent technical role with AI-related tags
+        elif (
+            any(keyword in job_title for keyword in adjacent_keywords)
+            and has_ai_tag
+        ):
+            adjacent_matches.append(job)
+
+    return direct_matches + adjacent_matches
+
+def get_jobs_for_skill_analysis1(target_role: str):
+
+    if not target_role:
+        return []
+
+    jobs = get_jobs()
+
+    role_words = target_role.lower().split()
+
+    # AI-related keywords
+    ai_keywords = [
+        "ai/ml",
+        "artificial intelligence",
+        "machine learning",
+        "deep learning",
+        "llm",
+        "llms",
+        "rag",
+        "nlp",
+        "generative ai"
+    ]
+
+    relevant_jobs = []
+
+    for job in jobs:
+
+        job_title = job.get("title", "").lower()
+
+        job_tags = [
+            tag.lower().strip()
+            for tag in job.get("skills", [])
+        ]
+
+        # 1. Title matching
+        title_match = any(
+            word in job_title
+            for word in role_words
+        )
+
+        # 2. AI-related tag matching
+        tag_match = any(
+            keyword in tag
+            for keyword in ai_keywords
+            for tag in job_tags
+        )
+
+        if title_match or tag_match:
+            relevant_jobs.append(job)
+
+    return relevant_jobs
+
 
 def generate_insights():
 
-   # jobs = load_jobs()
     jobs = get_jobs()
+
     skill_counts = {}
     total_salary = 0
-    #clean the logic - todo
+    salary_count = 0
 
     for job in jobs:
-     salary = job.get("salary")
-    if isinstance(salary, int):
-        total_salary += salary
-    for skill in job["skills"]:
-        skill = skill.lower()
-        if skill not in skill_counts:
-            skill_counts[skill] = 0
-        skill_counts[skill] += 1
-    average_salary = total_salary / len(jobs)
 
-# Sort skills by count-------
+        # Salary calculation
+        salary = job.get("salary")
+
+        if isinstance(salary, (int, float)):
+            total_salary += salary
+            salary_count += 1
+
+        # Skill frequency calculation
+        for skill in job.get("skills", []):
+
+            skill = skill.lower().strip()
+
+            skill_counts[skill] = (
+                skill_counts.get(skill, 0) + 1
+            )
+
+    average_salary = (
+        total_salary / salary_count
+        if salary_count else 0
+    )
+
+    # Sort skills by frequency
     top_skills = sorted(
         skill_counts.items(),
         key=lambda x: x[1],
         reverse=True
     )
 
-    print("Service - Average Salary:::::", average_salary)
-    print("Service - Top Skills:::::", top_skills[:5])
+    print("Service - Average Salary:", average_salary)
+    print("Service - Top Skills:", top_skills[:5])
 
     return {
         "average_salary": average_salary,
         "top_skills": top_skills[:5]
-    } 
+    }
