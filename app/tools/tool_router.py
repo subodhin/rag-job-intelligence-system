@@ -20,7 +20,7 @@ def select_tool(intent: str, query: str):
     if intent == "job_search":
         if any(
             word in query_lower
-            for word in ["semantic", "similar", "experience", "looking for"]
+            for word in ["semantic", "similar", "experience", "looking for"] #todo:get llm support to detect semantic search tool
         ):
             return "semantic_job_search"
 
@@ -33,19 +33,19 @@ def select_tool(intent: str, query: str):
 
         if any(
             phrase in query_lower
-            for phrase in ["saved jobs", "my jobs", "tracked jobs"]
+            for phrase in ["saved jobs", "my jobs", "tracked jobs"] #todo: get llm support to detect saved jobs tool
         ):
             return "get_saved_jobs"
 
         if any(
             word in query_lower
-            for word in ["applied", "interview", "rejected", "offer"]
+            for word in ["applied", "interview", "rejected", "offer"] #todo: get llm support to detect track job tool
         ):
             return "track_job"
 
         if any(
             word in query_lower
-            for word in ["save", "bookmark"]
+            for word in ["save", "bookmark"] #todo: get llm support to detect save job tool
         ):
             return "save_job"
 
