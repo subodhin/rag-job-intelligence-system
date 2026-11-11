@@ -70,7 +70,6 @@ def execute_tool(tool_name: str, query: str, user_id=None, job=None):
 
     if tool_name == "job_insights":
         return tool()
-#todo: add user_id and job to the tool execution
     if tool_name == "save_job":
 
         if not user_id or not job:
